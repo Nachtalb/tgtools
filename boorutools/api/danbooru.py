@@ -15,8 +15,21 @@ class DanbooruError(ClientError):
 
 
 class DanbooruApi:
-    def __init__(self, user: str, api_key: str, host: str = HOSTS.danbooru):
-        self.session = ClientSession(auth=BasicAuth(user, api_key))
+    def __init__(
+        self,
+        session: ClientSession | None = None,
+        user: str = "",
+        api_key: str = "",
+        host: str = HOSTS.danbooru,
+    ):
+        self.session = session or ClientSession()
+
+        self.auth = None
+        if user and api_key:
+            self.auth = BasicAuth(user, api_key)
+        elif (user and not api_key) or (not user and api_key):
+            raise ValueError("Either set both user and api_key or neither")
+
         self.url = URL(host)
         self.user = user
         self.key = api_key
@@ -27,7 +40,7 @@ class DanbooruApi:
     async def _request(
         self, endpoint: str, query: dict[str, str | int | float] = {}
     ) -> dict[str, Any] | list[dict[str, Any]] | None:
-        async with self.session.get(self.url / (endpoint + ".json"), params=query) as response:
+        async with self.session.get(self.url / (endpoint + ".json"), params=query, auth=self.auth) as response:
             data = await response.json()
             if data.get("success", True) is False:
                 raise DanbooruError(data.get("error"), data.get("message"))
