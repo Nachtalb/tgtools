@@ -12,12 +12,36 @@ from .file_summary import URLFileSummary
 
 
 class DanbooruFileSummary(URLFileSummary):
+    """
+    A class representing a summary of a Danbooru file.
+
+    Attributes:
+        is_gif (bool): Indicates if the file is a gif.
+    """
+
     @property
     def is_gif(self) -> bool:
+        """
+        Checks if the file is a gif.
+
+        Returns:
+            bool: True if the file is a gif, False otherwise.
+        """
         return self.file_ext == "zip"
 
 
 class RATING:
+    """
+    A utility class for handling Danbooru rating levels and their corresponding strings.
+
+    Attributes:
+        g, general (str): The general rating string.
+        s, sensitive (str): The sensitive rating string.
+        q, questionable (str): The questionable rating string.
+        e, explicit (str): The explicit rating string.
+        levels (dict[str, int]): A dictionary mapping rating strings to their corresponding integer levels.
+    """
+
     g = general = "rating:general"
     s = sensitive = "rating:sensitive"
     q = questionable = "rating:questionable"
@@ -27,14 +51,115 @@ class RATING:
 
     @staticmethod
     def level(rating: str) -> int:
+        """
+        Get the integer level of a given rating.
+
+        Args:
+            rating (str): The rating string.
+
+        Returns:
+            int: The corresponding integer level of the rating.
+
+        Examples:
+            >>> RATING.level("rating:general")
+            0
+
+            >>> RATING.level("rating:explicit")
+            3
+        """
         return RATING.levels.get(getattr(RATING, rating, rating), 0)
 
     @staticmethod
     def simple(rating: str) -> str:
+        """
+        Get the simple rating string from a given rating.
+
+        Args:
+            rating (str): The rating string.
+
+        Returns:
+            str: The simple rating string.
+
+        Examples:
+            >>> RATING.simple("g")
+            "general"
+
+            >>> RATING.simple("e")
+            "explicit"
+        """
         return getattr(RATING, rating, rating).split(":")[-1]
+
+    @staticmethod
+    def full(rating: str) -> str:
+        """
+        Get the full rating string from a given rating.
+
+        Args:
+            rating (str): The rating string.
+
+        Returns:
+            str: The full rating string.
+
+        Examples:
+            >>> RATING.simple("g")
+            "rating:general"
+
+            >>> RATING.simple("e")
+            "rating:explicit"
+        """
+        return getattr(RATING, rating, rating)
 
 
 class Post(BaseModel):
+    """
+    A class representing a Danbooru post.
+
+    Attributes:
+        id (int): The post ID.
+        created_at (datetime): The post creation datetime.
+        updated_at (datetime): The post update datetime.
+        uploader_id (int): The ID of the uploader.
+        approver_id (int | None): The ID of the approver, if any.
+        tag_string (str): The full tag string.
+        tag_string_general (str): The general tag string.
+        tag_string_artist (str): The artist tag string.
+        tag_string_copyright (str): The copyright tag string.
+        tag_string_character (str): The character tag string.
+        tag_string_meta (str): The meta tag string.
+        rating (str | None): The rating of the post.
+        parent_id (int | None): The ID of the parent post, if any.
+        pixiv_id (int | None): The ID of the post on Pixiv, if any.
+        source (str): The source of the post.
+        md5 (str | None): The MD5 hash of the post.
+        file_url (str): The URL of the file.
+        large_file_url (str | None): The URL of the large file, if any.
+        preview_file_url (str | None): The URL of the preview file, if any.
+        file_ext (str): The file extension.
+        file_size (int): The file size in bytes.
+        image_width (int): The image width in pixels.
+        image_height (int): The image height in pixels.
+        score (int): The post score.
+        up_score (int): The up score of the post.
+        down_score (int): The down score of the post.
+        fav_count (int): The number of favourites.
+        tag_count_general (int): The count of general tags.
+        tag_count_artist (int): The count of artist tags.
+        tag_count_copyright (int): The count of copyright tags.
+        tag_count_character (int): The count of character tags.
+        tag_count_meta (int): The count of meta tags.
+        last_comment_bumped_at (datetime | None): The datetime of the last bumped comment, if any.
+        last_noted_at (datetime | None): The datetime of the last note, if any.
+        has_large (bool): Indicates if the post has a large file.
+        has_children (bool): Indicates if the post has children.
+        has_visible_children (bool): Indicates if the post has visible children.
+        has_active_children (bool): Indicates if the post has active children.
+        is_banned (bool): Indicates if the post is banned.
+        is_deleted (bool): Indicates if the post is deleted.
+        is_flagged (bool): Indicates if the post is flagged.
+        is_pending (bool): Indicates if the post is pending.
+        bit_flags (int): The bit flags of the post.
+    """
+
     id: int
     created_at: datetime
     updated_at: datetime
@@ -86,61 +211,150 @@ class Post(BaseModel):
         return f"<Post id={self.id}>"
 
     async def download(self, out: Path | None = None) -> BytesIO | Path:
+        """
+        Download the post file.
+
+        Args:
+            out (Path | None): The output path for the downloaded file, if any.
+
+        Returns:
+            BytesIO | Path: The downloaded file as a BytesIO object if no output path is provided, otherwise the output path.
+        """
         return await self._api.download(self.best_file_url, out)
 
     @property
     def tags_rating(self) -> set[str]:
+        """
+        Get the full named rating tags of the post.
+
+        Returns:
+            set[str]: The rating tags as a set of strings.
+        """
         return set([getattr(RATING, self.rating)]) if self.rating else set()
 
     @property
     def tags(self) -> set[str]:
+        """
+        Get all the tags of the post (excluding rating tags).
+
+        Returns:
+            set[str]: All the tags as a set of strings.
+        """
         return set(self.tag_string.split())
 
     @property
     def tags_with_rating(self) -> set[str]:
+        """
+        Get all the tags of the post, including rating tags.
+
+        Returns:
+            set[str]: All the tags with rating as a set of strings.
+        """
         return self.tags & self.tags_rating
 
     @property
     def tags_general(self) -> set[str]:
+        """
+        Get the general tags of the post.
+
+        Returns:
+            set[str]: The general tags as a set of strings.
+        """
         return set(self.tag_string_general.split())
 
     @property
     def tags_artist(self) -> set[str]:
+        """
+        Get the artist tags of the post.
+
+        Returns:
+            set[str]: The artist tags as a set of strings.
+        """
         return set(self.tag_string_artist.split())
 
     @property
     def tags_copyright(self) -> set[str]:
+        """
+        Get the copyright tags of the post.
+
+        Returns:
+            set[str]: The copyright tags as a set of strings.
+        """
         return set(self.tag_string_copyright.split())
 
     @property
     def tags_character(self) -> set[str]:
+        """
+        Get the character tags of the post.
+
+        Returns:
+            set[str]: The character tags as a set of strings.
+        """
         return set(self.tag_string_character.split())
 
     @property
     def tags_meta(self) -> set[str]:
+        """
+        Get the meta tags of the post.
+
+        Returns:
+            set[str]: The meta tags as a set of strings.
+        """
         return set(self.tag_string_meta.split())
 
     @property
     def url(self) -> str:
+        """
+        Get the gui URL of the post.
+
+        Returns:
+            str: The post URL as a string.
+        """
         return f"https://danbooru.donmai.us/posts/{self.id}"
 
     @property
     def best_file_url(self) -> str:
+        """
+        Get the best file URL of the post.
+
+        Returns:
+            str: The best file URL as a string.
+        """
         return self.file_url if not self.file_summary.is_gif else (self.large_file_url or self.file_url)
 
     @property
     def is_bad(self) -> bool:
+        """
+        Check if the post is bad.
+
+        A post is considered bad if it is banned or if it is deleted and has a low up score compared to its down score
+        (up score / abs(down score) < 2).
+
+        Returns:
+            bool: True if the post is bad, False otherwise.
+        """
         return self.is_banned or (self.is_deleted and ((self.up_score or 1) / abs(self.down_score or 1) < 2))
 
     @property
     def filename(self) -> str:
+        """
+        Get the filename of the post.
+
+        Returns:
+            str: The filename as a string.
+        """
         return f"{self.id}.{self.file_ext}"
 
     @property
     def file_summary(self) -> DanbooruFileSummary:
+        """
+        Get the file summary of the post.
+
+        Returns:
+            DanbooruFileSummary: The file summary as a DanbooruFileSummary object.
+        """
         if not self._file_summary:
             self._file_summary = DanbooruFileSummary(
-                file=None,
                 url=self.file_url,
                 file_name=Path(self.filename),
                 size=self.file_size,

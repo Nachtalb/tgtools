@@ -10,12 +10,15 @@ __all__ = ["make_tg_compatible"]
 
 async def make_tg_compatible(file: MediaSummary) -> tuple[FileSummary | MediaSummary | None, bool]:
     """
-    Make sure the file is telegram compatibile
+    Make sure the file is compatible with Telegram.
+
+    Args:
+        file (MediaSummary): The media file to be checked for compatibility.
 
     Returns:
-        A tuple of either the adjusted file summary and if the file has to
-        be sent as a document or None and False in which case it's not compatible
-        in any way.
+        tuple[FileSummary | MediaSummary | None, bool]: A tuple containing either the adjusted file summary and a boolean
+                                                        indicating if the file has to be sent as a Telegram Document, or
+                                                        None and False if the file is not compatible in any way.
     """
     if file.is_image:
         compatibility = ImageCompatibility(file)

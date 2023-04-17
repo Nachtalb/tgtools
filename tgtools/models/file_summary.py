@@ -6,6 +6,17 @@ from pydantic import BaseModel
 
 
 class Summary(BaseModel):
+    """
+    A summary of a file containing information such as file name, size, dimensions, and download method.
+
+    Attributes:
+        file_name (Path): The file name with its extension.
+        size (int): The file size in bytes.
+        height (int): The height of the image or video.
+        width (int): The width of the image or video.
+        download_method (Callable): A callable function to download the file.
+    """
+
     file_name: Path
     size: int
     height: int
@@ -13,31 +24,44 @@ class Summary(BaseModel):
     download_method: Callable
 
     @property
-    def ratio_wh(self):
+    def ratio_wh(self) -> float:
+        """The width-to-height ratio."""
         return self.width / self.height
 
     @property
-    def ratio_hw(self):
+    def ratio_hw(self) -> float:
+        """The height-to-width ratio."""
         return self.height / self.width
 
     @property
-    def file_ext(self):
+    def file_ext(self) -> str:
+        """The file extension, without the leading period."""
         return self.file_name.suffix[1:]
 
     @property
     def is_image(self) -> bool:
+        """Whether the file is an image."""
         return self.file_ext in ["jpg", "jpeg", "png", "webp"]
 
     @property
     def is_gif(self) -> bool:
+        """Whether the file is a GIF."""
         return self.file_ext == "gif"
 
     @property
     def is_video(self) -> bool:
+        """Whether the file is a video."""
         return self.file_ext in ["mp4", "webm", "mkv"]
 
 
 class FileSummary(Summary):
+    """
+    A summary of a file containing the file itself as a BytesIO object, in addition to the attributes of the Summary class.
+
+    Attributes:
+        file (BytesIO): The file as a BytesIO object.
+    """
+
     file: BytesIO
 
     class Config:
@@ -45,4 +69,11 @@ class FileSummary(Summary):
 
 
 class URLFileSummary(Summary):
+    """
+    A summary of a file containing a URL, in addition to the attributes of the Summary class.
+
+    Attributes:
+        url (str): The URL of the file.
+    """
+
     url: str
