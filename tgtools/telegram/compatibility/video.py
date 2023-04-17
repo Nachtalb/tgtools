@@ -1,5 +1,5 @@
-from boorutools.telegram.compatibility.base import MediaSummary
-from boorutools.telegram.compatibility.document import DocumentCompatibility
+from tgtools.telegram.compatibility.base import MediaSummary
+from tgtools.telegram.compatibility.document import DocumentCompatibility
 
 
 class VideoCompatibility(DocumentCompatibility):

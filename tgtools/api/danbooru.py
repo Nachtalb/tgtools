@@ -6,8 +6,8 @@ from aiohttp import BasicAuth, ClientError, ClientSession
 from aiopath import AsyncPath
 from yarl import URL
 
-from boorutools.api import HOSTS
-from boorutools.models.danbooru import Post
+from tgtools.api import HOSTS
+from tgtools.models.danbooru import Post
 
 
 class DanbooruError(ClientError):

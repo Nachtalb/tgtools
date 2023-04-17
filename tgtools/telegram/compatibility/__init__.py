@@ -1,9 +1,9 @@
-from boorutools.models.file_summary import FileSummary
-from boorutools.telegram.compatibility.base import MediaSummary
-from boorutools.telegram.compatibility.document import DocumentCompatibility
-from boorutools.telegram.compatibility.gif import GifCompatibility
-from boorutools.telegram.compatibility.image import ImageCompatibility
-from boorutools.telegram.compatibility.video import VideoCompatibility
+from tgtools.models.file_summary import FileSummary
+from tgtools.telegram.compatibility.base import MediaSummary
+from tgtools.telegram.compatibility.document import DocumentCompatibility
+from tgtools.telegram.compatibility.gif import GifCompatibility
+from tgtools.telegram.compatibility.image import ImageCompatibility
+from tgtools.telegram.compatibility.video import VideoCompatibility
 
 __all__ = ["make_tg_compatible"]
 

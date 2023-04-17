@@ -1,9 +1,9 @@
 from asyncio import subprocess
 from io import BytesIO
 
-from boorutools.models.file_summary import URLFileSummary
-from boorutools.telegram.compatibility.base import MediaSummary
-from boorutools.telegram.compatibility.document import DocumentCompatibility
+from tgtools.models.file_summary import URLFileSummary
+from tgtools.telegram.compatibility.base import MediaSummary
+from tgtools.telegram.compatibility.document import DocumentCompatibility
 
 
 class GifCompatibility(DocumentCompatibility):

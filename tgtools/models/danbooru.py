@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel, PrivateAttr
 
 if TYPE_CHECKING:
-    from boorutools.api.danbooru import DanbooruApi
+    from tgtools.api.danbooru import DanbooruApi
 
 from .file_summary import URLFileSummary
 

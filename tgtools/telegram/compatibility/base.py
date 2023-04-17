@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from io import BytesIO
 from typing import Union
 
-from boorutools.models.file_summary import FileSummary, URLFileSummary
+from tgtools.models.file_summary import FileSummary, URLFileSummary
 
 MediaSummary = Union[FileSummary, URLFileSummary]
 
