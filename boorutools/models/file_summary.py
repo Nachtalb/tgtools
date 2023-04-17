@@ -1,9 +1,8 @@
 from io import BytesIO
 from pathlib import Path
 from typing import Callable
-from pydantic import BaseModel
 
-from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 
 
 class Summary(BaseModel):

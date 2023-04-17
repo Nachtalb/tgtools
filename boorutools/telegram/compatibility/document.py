@@ -1,4 +1,4 @@
-from boorutools.models.base import URLFileSummary
+from boorutools.models.file_summary import URLFileSummary
 from boorutools.telegram.compatibility.base import MediaCompatibility, MediaSummary
 
 

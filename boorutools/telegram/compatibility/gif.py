@@ -1,7 +1,7 @@
 from asyncio import subprocess
 from io import BytesIO
 
-from boorutools.models.base import URLFileSummary
+from boorutools.models.file_summary import URLFileSummary
 from boorutools.telegram.compatibility.base import MediaSummary
 from boorutools.telegram.compatibility.document import DocumentCompatibility
 

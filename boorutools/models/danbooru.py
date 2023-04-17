@@ -8,7 +8,7 @@ from pydantic import BaseModel, PrivateAttr
 if TYPE_CHECKING:
     from boorutools.api.danbooru import DanbooruApi
 
-from .base import URLFileSummary
+from .file_summary import URLFileSummary
 
 
 class DanbooruFileSummary(URLFileSummary):

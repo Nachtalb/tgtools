@@ -1,4 +1,4 @@
-from boorutools.models.base import FileSummary
+from boorutools.models.file_summary import FileSummary
 from boorutools.telegram.compatibility.base import MediaSummary
 from boorutools.telegram.compatibility.document import DocumentCompatibility
 from boorutools.telegram.compatibility.gif import GifCompatibility
