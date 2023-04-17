@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "boorutools"
+name = "tgtools"
 version = "0.1.0"
 description = ""
 authors = ["Nachtalb <na@nachtalb.io>"]
