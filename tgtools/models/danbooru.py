@@ -35,19 +35,41 @@ class RATING:
     A utility class for handling Danbooru rating levels and their corresponding strings.
 
     Attributes:
-        g, general (str): The general rating string.
-        s, sensitive (str): The sensitive rating string.
-        q, questionable (str): The questionable rating string.
-        e, explicit (str): The explicit rating string.
+        general (str): The general rating string.
+        sensitive (str): The sensitive rating string.
+        questionable (str): The questionable rating string.
+        explicit (str): The explicit rating string.
         levels (dict[str, int]): A dictionary mapping rating strings to their corresponding integer levels.
+        full_name_map (dict[str, str]): A dictionary mapping rating all variations of
+                                        rating strings to their full name.
     """
 
-    g = general = "rating:general"
-    s = sensitive = "rating:sensitive"
-    q = questionable = "rating:questionable"
-    e = explicit = "rating:explicit"
+    general = "rating:general"
+    sensitive = "rating:sensitive"
+    questionable = "rating:questionable"
+    explicit = "rating:explicit"
 
-    levels = {"rating:general": 0, "rating:sensitive": 1, "rating:questionable": 2, "rating:explicit": 3}
+    levels = {
+        "rating:general": 0,
+        "rating:sensitive": 1,
+        "rating:questionable": 2,
+        "rating:explicit": 3,
+    }
+
+    full_name_map = {
+        "g": general,
+        "general": general,
+        "rating:general": general,
+        "s": sensitive,
+        "sensitive": sensitive,
+        "rating:sensitive": sensitive,
+        "q": questionable,
+        "questionable": questionable,
+        "rating:questionable": questionable,
+        "e": explicit,
+        "explicit": explicit,
+        "rating:explicit": explicit,
+    }
 
     @staticmethod
     def level(rating: str) -> int:
@@ -61,18 +83,23 @@ class RATING:
             int: The corresponding integer level of the rating.
 
         Examples:
-            >>> RATING.level("rating:general")
+            >>> RATING.level("g")
             0
+
+            >>> RATING.level("sensitive")
+            1
 
             >>> RATING.level("rating:explicit")
             3
         """
-        return RATING.levels.get(getattr(RATING, rating, rating), 0)
+        return RATING.levels[RATING.full(rating)]
 
     @staticmethod
     def simple(rating: str) -> str:
         """
         Get the simple rating string from a given rating.
+
+        Without the "rating:" part.
 
         Args:
             rating (str): The rating string.
@@ -87,7 +114,7 @@ class RATING:
             >>> RATING.simple("e")
             "explicit"
         """
-        return getattr(RATING, rating, rating).split(":")[-1]
+        return RATING.full(rating).split(":")[-1]
 
     @staticmethod
     def full(rating: str) -> str:
@@ -104,10 +131,13 @@ class RATING:
             >>> RATING.simple("g")
             "rating:general"
 
-            >>> RATING.simple("e")
+            >>> RATING.simple("rating:sensitive")
+            "rating:sensitive"
+
+            >>> RATING.simple("explicit")
             "rating:explicit"
         """
-        return getattr(RATING, rating, rating)
+        return RATING.full_name_map[rating]
 
 
 class Post(BaseModel):
@@ -223,6 +253,28 @@ class Post(BaseModel):
         return await self._api.download(self.best_file_url, out)
 
     @property
+    def rating_full(self) -> str | None:
+        """
+        Get the full named rating of the post.
+
+        Returns:
+            set[str]: The full rating strings.
+        """
+        return RATING.full(self.rating) if self.rating else None
+
+    @property
+    def rating_simple(self) -> str | None:
+        """
+        Get the simple named rating of the post.
+
+        Without the "rating:" part.
+
+        Returns:
+            set[str]: The simple rating strings.
+        """
+        return RATING.simple(self.rating) if self.rating else None
+
+    @property
     def tags_rating(self) -> set[str]:
         """
         Get the full named rating tags of the post.
@@ -230,7 +282,17 @@ class Post(BaseModel):
         Returns:
             set[str]: The rating tags as a set of strings.
         """
-        return set([getattr(RATING, self.rating)]) if self.rating else set()
+        return {self.rating_full} if self.rating_full else set()
+
+    @property
+    def simple_tags_rating(self) -> set[str]:
+        """
+        Get the simple named rating tags of the post.
+
+        Returns:
+            set[str]: The rating tags as a set of strings.
+        """
+        return {self.rating_simple} if self.rating_simple else set()
 
     @property
     def tags(self) -> set[str]:
