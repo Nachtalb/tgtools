@@ -66,7 +66,7 @@ HOST_MAP = {
     },
     "pixiv": {
         "name": "Pixiv",
-        "emoji": ":p_button:",
+        "emoji": ":P_button:",
         "urls": ["pixiv.net", "www.pixiv.net", "i.pximg.net"],
     },
     "deviantart": {
