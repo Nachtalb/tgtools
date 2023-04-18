@@ -107,6 +107,8 @@ class ImageCompatibility(MediaCompatibility):
             self.file.file_name = self.file.file_name.with_suffix(f".{format}")
         self.file.size = file.getbuffer().nbytes
         self.file.width, self.file.height = image.size
+        self.file.file = file
+        file.seek(0)
 
     def convert_to_jpeg(self, image: Image.Image) -> Image.Image:
         """

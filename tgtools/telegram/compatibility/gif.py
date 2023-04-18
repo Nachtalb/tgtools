@@ -30,7 +30,9 @@ class GifCompatibility(DocumentCompatibility):
                 self.file = await self.download()
 
             if converted := await self.webm_to_mp4(self.file.file):
+                converted.seek(0)
                 self.file.file = converted
+                self.file.size = converted.getbuffer().nbytes
             else:
                 return None, Video
 
