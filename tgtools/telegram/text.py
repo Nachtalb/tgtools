@@ -1,4 +1,5 @@
 import re
+from random import choices
 from typing import Iterable
 
 from emoji import emojize
@@ -46,6 +47,29 @@ def tagify(tags: Iterable[str] | str) -> set[str]:
 
     # Add a hashtag to each tag, and prefix tags starting with a digit with an underscore
     return {f"#_{tag}" if tag[0].isdigit() else f"#{tag}" for tag in filter(None, tags)}
+
+
+def tagified_string(tags: Iterable[str], limit: int = 0) -> str:
+    """
+    Create a string of hashtag-like strings from a list of tags.
+
+    Args:
+        tags (Iterable[str]): An iterable of tags (strings).
+        limit (int, optional): The maximum number of tags to include in the output string. Defaults to 0 (no limit).
+
+    Returns:
+        str: A string of hashtag-like strings separated by commas.
+
+    Examples:
+        >>> tagified_string(["hello", "world"])
+        "#hello, #world"
+
+        >>> tagified_string(["hello", "world"], limit=1)
+        "#hello" or "#world"
+    """
+    if limit:
+        tags = choices(list(tags), k=limit)
+    return ", ".join(tagify(tags))
 
 
 HOST_MAP = {
