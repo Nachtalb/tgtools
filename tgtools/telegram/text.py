@@ -114,7 +114,7 @@ URL_MAP = {url: key for key, data in HOST_MAP.items() for url in data["urls"]}
 
 FALLBACK_EMOJIS = {
     "globe": ":globe_with_meridians:",
-    "picture": ":frame_with_picture:",
+    "picture": ":framed_picture:",
 }
 
 
