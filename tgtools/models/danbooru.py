@@ -1,7 +1,7 @@
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, AsyncGenerator
 
 from pydantic import BaseModel, PrivateAttr
 
@@ -252,6 +252,22 @@ class Post(BaseModel):
         """
         return await self._api.download(self.best_file_url, out)
 
+    async def iter_download(
+        self, out: Path | None = None, chunk_size: int = 1024 * 1024
+    ) -> AsyncGenerator[BytesIO | Path, None]:
+        """
+        Download the post file in chunks.
+
+        Args:
+            out (Path | None): The output path for the downloaded file, if any.
+            chunk_size (int, optional): The size of the chunks to download. Defaults to 1024 * 1024.
+
+        Yields:
+            AsyncGenerator[BytesIO | Path, None]: The downloaded file as a BytesIO object if no output path is provided, otherwise the output path, in chunks.
+        """
+        async for item in self._api.iter_download(self.best_file_url, out, chunk_size):
+            yield item
+
     @property
     def rating_full(self) -> str | None:
         """
@@ -422,7 +438,8 @@ class Post(BaseModel):
                 size=self.file_size,
                 height=self.image_height,
                 width=self.image_width,
-                download_method=self.download,
+                download_method=self.download,  # pyright: ignore[reportGeneralTypeIssues]
+                iter_download_method=self.iter_download,  # pyright: ignore[reportGeneralTypeIssues]
             )
             self._file_summary.url = self.best_file_url
         return self._file_summary

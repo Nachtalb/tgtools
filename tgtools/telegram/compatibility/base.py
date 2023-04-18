@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from io import BytesIO
-from typing import Type
+from typing import Awaitable, Type
 
 from telegram import Document, PhotoSize, Video
 
@@ -43,7 +43,7 @@ class MediaCompatibility(metaclass=ABCMeta):
         """
         if isinstance(self.file, FileSummary):
             return self.file
-        data = self.file.dict(exclude={"url"})
+        data = self.file.dict(exclude={"url", "download_method", "iter_download_method"})
         data["file"] = content
         return FileSummary.parse_obj(data)
 
@@ -54,7 +54,9 @@ class MediaCompatibility(metaclass=ABCMeta):
         Returns:
             FileSummary: The downloaded media file as a FileSummary object.
         """
-        return self.url_to_file_summary(await self.file.download_method())
+        if isinstance(self.file, URLFileSummary):
+            return self.url_to_file_summary(await self.file.download_method())
+        return self.file
 
     @abstractmethod
     async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:

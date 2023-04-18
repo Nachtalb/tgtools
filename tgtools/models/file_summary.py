@@ -1,6 +1,6 @@
 from io import BytesIO
 from pathlib import Path
-from typing import Callable
+from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
 
 from pydantic import BaseModel
 
@@ -21,7 +21,6 @@ class Summary(BaseModel):
     size: int
     height: int
     width: int
-    download_method: Callable
 
     @property
     def ratio_wh(self) -> float:
@@ -77,3 +76,5 @@ class URLFileSummary(Summary):
     """
 
     url: str
+    download_method: Callable[..., Awaitable[BytesIO]]
+    iter_download_method: Callable[..., AsyncGenerator[BytesIO, None]]

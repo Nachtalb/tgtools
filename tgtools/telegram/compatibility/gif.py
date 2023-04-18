@@ -5,10 +5,10 @@ from telegram import Video
 
 from tgtools.models.file_summary import URLFileSummary
 from tgtools.telegram.compatibility.base import MediaSummary, MediaType
-from tgtools.telegram.compatibility.document import DocumentCompatibility
+from tgtools.telegram.compatibility.video import VideoCompatibility
 
 
-class GifCompatibility(DocumentCompatibility):
+class GifCompatibility(VideoCompatibility):
     """
     Class for checking and making GIF files compatible with Telegram.
     Inherits from DocumentCompatibility.

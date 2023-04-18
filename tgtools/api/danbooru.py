@@ -1,6 +1,6 @@
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, AsyncGenerator, Union
 
 from aiohttp import BasicAuth, ClientError, ClientSession
 from aiopath import AsyncPath
@@ -148,3 +148,32 @@ class DanbooruApi:
                 await aio_path.write_bytes(await response.content.read())
                 return out
             return BytesIO(await response.content.read())
+
+    async def iter_download(
+        self, url: str, out: Path | None = None, chunk_size: int = 1024 * 1024
+    ) -> AsyncGenerator[BytesIO | Path, None]:
+        """
+        Download a file from the given URL in chunks.
+
+        Args:
+            url (str): The URL of the file to download.
+            out (Path | None): The output path to save the file to. If None, the file will be returned as a BytesIO object.
+            chunk_size (int, optional): The size of the chunks to download. Defaults to 1024 * 1024.
+
+        Yields:
+            AsyncGenerator[BytesIO | Path, None]: The downloaded file as a BytesIO object if no output path is provided, otherwise the output path, in chunks.
+        """
+        async with self.session.get(url) as response:
+            if out:
+                aio_path = AsyncPath(out)
+                async with aio_path.open("wb") as file:
+                    async for chunk in response.content.iter_chunked(chunk_size):
+                        await file.write(chunk)
+                        yield out
+            else:
+                buffer = BytesIO()
+                async for chunk in response.content.iter_chunked(chunk_size):
+                    buffer.write(chunk)
+                    buffer.seek(0)
+                    yield buffer
+                    buffer.seek(0, 2)  # Go to end of file
