@@ -1,5 +1,5 @@
 from tgtools.models.file_summary import FileSummary
-from tgtools.telegram.compatibility.base import MediaSummary
+from tgtools.telegram.compatibility.base import MediaSummary, MediaType
 from tgtools.telegram.compatibility.document import DocumentCompatibility
 from tgtools.telegram.compatibility.gif import GifCompatibility
 from tgtools.telegram.compatibility.image import ImageCompatibility
@@ -8,7 +8,7 @@ from tgtools.telegram.compatibility.video import VideoCompatibility
 __all__ = ["make_tg_compatible"]
 
 
-async def make_tg_compatible(file: MediaSummary) -> tuple[FileSummary | MediaSummary | None, bool]:
+async def make_tg_compatible(file: MediaSummary) -> tuple[FileSummary | MediaSummary | None, MediaType]:
     """
     Make sure the file is compatible with Telegram.
 
@@ -16,9 +16,8 @@ async def make_tg_compatible(file: MediaSummary) -> tuple[FileSummary | MediaSum
         file (MediaSummary): The media file to be checked for compatibility.
 
     Returns:
-        tuple[FileSummary | MediaSummary | None, bool]: A tuple containing either the adjusted file summary and a boolean
-                                                        indicating if the file has to be sent as a Telegram Document, or
-                                                        None and False if the file is not compatible in any way.
+        tuple[FileSummary | MediaSummary | None, MediaType]: A tuple containing either the adjusted file summary and its type.
+                                                             None if the file is not compatible in any way.
     """
     if file.is_image:
         compatibility = ImageCompatibility(file)

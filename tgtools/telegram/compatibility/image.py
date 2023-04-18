@@ -1,9 +1,10 @@
 from io import BytesIO
 
 from PIL import Image
+from telegram import Document, PhotoSize
 
 from tgtools.models.file_summary import URLFileSummary
-from tgtools.telegram.compatibility.base import MediaCompatibility, MediaSummary
+from tgtools.telegram.compatibility.base import MediaCompatibility, MediaSummary, MediaType
 
 
 class ImageCompatibility(MediaCompatibility):
@@ -143,7 +144,7 @@ class ImageCompatibility(MediaCompatibility):
         self.save_file(image)
         return image
 
-    async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, bool]:
+    async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:
         """
         Make the image file compatible with Telegram by checking its size, aspect ratio, and format,
         and converting or resizing if necessary.
@@ -157,8 +158,8 @@ class ImageCompatibility(MediaCompatibility):
             force_download (bool, optional): Force download the file even if it's already compatible. Defaults to False.
 
         Returns:
-            tuple[MediaSummary | None, bool]: A tuple containing the compatible media file (or None if not compatible) and
-                                              a boolean indicating if it has to be sent as a Telegram Document.
+            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not compatible) and
+                                                   its type.
         """
         if force_download and isinstance(self.file, URLFileSummary):
             self.file = await self.download()
@@ -169,12 +170,12 @@ class ImageCompatibility(MediaCompatibility):
                 self.file = await self.download()
                 with Image.open(self.file.file) as image:
                     self.decrease_file_size(image, document_size)
-            return self.file, True
+            return self.file, Document
 
         if self.needs_processing() and isinstance(self.file, URLFileSummary):
             self.file = await self.download()
         elif not self.needs_processing():
-            return self.file, False
+            return self.file, PhotoSize
 
         with Image.open(self.file.file) as image:
 
@@ -185,4 +186,4 @@ class ImageCompatibility(MediaCompatibility):
 
             if self.resolution_too_heigh():
                 self.reduce_resolution(image)
-            return self.file, False
+            return self.file, PhotoSize

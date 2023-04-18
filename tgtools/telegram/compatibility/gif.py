@@ -1,8 +1,10 @@
 from asyncio import subprocess
 from io import BytesIO
 
+from telegram import Video
+
 from tgtools.models.file_summary import URLFileSummary
-from tgtools.telegram.compatibility.base import MediaSummary
+from tgtools.telegram.compatibility.base import MediaSummary, MediaType
 from tgtools.telegram.compatibility.document import DocumentCompatibility
 
 
@@ -12,7 +14,7 @@ class GifCompatibility(DocumentCompatibility):
     Inherits from DocumentCompatibility.
     """
 
-    async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, bool]:
+    async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:
         """
         Make the GIF file compatible with Telegram by converting it to MP4 format if needed and downloading if necessary.
 
@@ -20,8 +22,8 @@ class GifCompatibility(DocumentCompatibility):
             force_download (bool, optional): Force download the file even if it's already compatible. Defaults to False.
 
         Returns:
-            tuple[MediaSummary | None, bool]: A tuple containing the compatible media file (or None if not compatible) and
-                                              a boolean indicating if it has to be sent as a Telegram Document.
+            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not compatible) and
+                                                   its type.
         """
         if self.file.file_ext == "webm":
             if isinstance(self.file, URLFileSummary):
@@ -30,9 +32,9 @@ class GifCompatibility(DocumentCompatibility):
             if converted := await self.webm_to_mp4(self.file.file):
                 self.file.file = converted
             else:
-                return None, False
+                return None, Video
 
-        return (await super().make_compatible(force_download))[0], False
+        return (await super().make_compatible(force_download))[0], Video
 
     async def webm_to_mp4(self, data: BytesIO) -> BytesIO | None:
         """

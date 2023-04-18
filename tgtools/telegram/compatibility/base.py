@@ -1,10 +1,13 @@
 from abc import ABCMeta, abstractmethod
 from io import BytesIO
-from typing import Union
+from typing import Type
+
+from telegram import Document, PhotoSize, Video
 
 from tgtools.models.file_summary import FileSummary, URLFileSummary
 
-MediaSummary = Union[FileSummary, URLFileSummary]
+MediaSummary = FileSummary | URLFileSummary
+MediaType = Type[PhotoSize] | Type[Video] | Type[Document] | None
 
 
 class MediaCompatibility(metaclass=ABCMeta):
@@ -54,7 +57,7 @@ class MediaCompatibility(metaclass=ABCMeta):
         return self.url_to_file_summary(await self.file.download_method())
 
     @abstractmethod
-    async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, bool]:
+    async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:
         """
         Make the media file compatible with Telegram by checking its size and converting it if necessary.
 

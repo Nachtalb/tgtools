@@ -13,6 +13,7 @@ aiohttp = {extras = ["speedups"], version = "^3.8.4"}
 aiopath = "^0.6.11"
 pillow = "^9.5.0"
 emoji = "^2.2.0"
+python-telegram-bot = "^20.2"
 
 
 [tool.poetry.group.dev.dependencies]
