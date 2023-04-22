@@ -163,11 +163,11 @@ class YanderePost(BaseModel, TagsNotCategorised, CommonInfo, BooruPost):
         """
         if not self._file_summary:
             self._file_summary = URLFileSummary(
-                url=self.file_url,
+                url=self.sample_url,
                 file_name=Path(self.filename),
-                size=self.file_size,
-                height=self.height,
-                width=self.width,
+                size=self.sample_file_size,
+                height=self.sample_height,
+                width=self.sample_width,
                 download_method=self.download,  # pyright: ignore[reportGeneralTypeIssues]
                 iter_download_method=self.iter_download,  # pyright: ignore[reportGeneralTypeIssues]
             )
