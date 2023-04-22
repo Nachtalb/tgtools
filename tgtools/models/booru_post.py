@@ -348,6 +348,16 @@ class BooruPost(metaclass=ABCMeta):
         """
         ...
 
+    @abstractproperty
+    def main_source(self) -> str | None:
+        """
+        Get the processed main source url
+
+        Returns:
+            str | None: The processed source, or None if there is no source
+        """
+        ...
+
 
 class TagsNotCategorised:
     """
@@ -430,6 +440,7 @@ class CommonInfo:
     rating: str
     file_url: str
     file_ext: str
+    source: str | None
 
     @property
     def rating_full(self) -> str | None:
@@ -472,3 +483,13 @@ class CommonInfo:
             str: The filename as a string.
         """
         return f"{self.id}.{self.file_ext}"
+
+    @property
+    def main_source(self) -> str | None:
+        """
+        Get the processed main source url
+
+        Returns:
+            str | None: The processed source, or None if there is no source
+        """
+        return self.source

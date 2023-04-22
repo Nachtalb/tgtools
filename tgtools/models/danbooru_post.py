@@ -253,3 +253,15 @@ class DanbooruPost(BaseModel, CommonInfo, BooruPost):
             )
             self._file_summary.url = self.best_file_url
         return self._file_summary
+
+    @property
+    def main_source(self) -> str | None:
+        """
+        Get the processed main source url
+
+        Returns:
+            str | None: The processed source, or None if there is no source
+        """
+        if self.pixiv_id:
+            return f"https://www.pixiv.net/artworks/{self.pixiv_id}"
+        return self.source
