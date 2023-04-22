@@ -110,6 +110,7 @@ class YanderePost(BaseModel, TagsNotCategorised, CommonInfo, BooruPost):
 
     _api: "YandereApi" = PrivateAttr()
     _post_url = URLTemplateBuilder(f"{HOSTS.yandere}/post/show/{{id}}")
+    _file_summary: URLFileSummary | None = PrivateAttr(None)
 
     def __repr__(self) -> str:
         """

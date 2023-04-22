@@ -3,9 +3,9 @@ from typing import Any
 from aiohttp import BasicAuth, ClientSession
 
 from tgtools.api import HOSTS
-from tgtools.api.booru_api import BooruApi
+from tgtools.api.booru_api import JSON, BooruApi, BooruError
 from tgtools.models.danbooru_post import DanbooruPost
-from tgtools.utils.urls.builder import URLTemplateBuilder
+from tgtools.utils.urls.builder import RequestDict, URLTemplateBuilder
 
 
 class DanbooruApi(BooruApi[DanbooruPost]):
@@ -24,6 +24,24 @@ class DanbooruApi(BooruApi[DanbooruPost]):
         super().__init__(session, auth, host)
         self._post_url = URLTemplateBuilder(f"{self.url}/posts/{{id}}.json")
         self._posts_url = URLTemplateBuilder(f"{self.url}/posts.json")
+
+    async def _request(self, request: RequestDict) -> JSON | None:
+        """
+        Make a request to the API.
+
+        Args:
+            request (RequestDict): The request dictionary for an aiohttp ClientSession request.
+
+        Returns:
+            JSON | None: The API response as a dictionary or list of dictionaries, or None if no data is returned.
+
+        Raises:
+            BooruError: If the API call is unsuccessful.
+        """
+        data = await super()._request(request)
+        if isinstance(data, dict) and data.get("success", True) is False:
+            raise BooruError(data.get("error"), data.get("message"))
+        return data
 
     def _convert_post(self, data: dict[str, Any]) -> DanbooruPost:
         """

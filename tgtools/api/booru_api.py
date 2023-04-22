@@ -71,14 +71,9 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
 
         Returns:
             JSON | None: The API response as a dictionary or list of dictionaries, or None if no data is returned.
-
-        Raises:
-            BooruError: If the API call is unsuccessful.
         """
         async with self.session.request(**request, auth=self.auth) as response:
             data = await response.json()
-            if data.get("success", True) is False:
-                raise BooruError(data.get("error"), data.get("message"))
         return data
 
     @abstractmethod
