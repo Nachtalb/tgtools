@@ -21,6 +21,9 @@ def tagify(tags: Iterable[str] | str) -> set[str]:
         set[str]: A set of hashtag-like strings.
 
     Examples:
+        >>> tagify("(^.^)")
+        set()
+
         >>> tagify("hello")
         {"#hello"}
 
@@ -43,7 +46,7 @@ def tagify(tags: Iterable[str] | str) -> set[str]:
     tags = " ".join(map(lambda s: s.replace(" ", "_"), tags))
 
     # Replace non-alphanumeric characters (except for underscores) with underscores
-    tags = re.sub(r"(?![_a-zA-Z0-9\s]).", "_", tags).split(" ")
+    tags = re.sub(r"\b_+\b", "", re.sub(r"(?![_a-zA-Z0-9\s]).", "_", tags)).split(" ")
 
     # Add a hashtag to each tag, and prefix tags starting with a digit with an underscore
     return {f"#_{tag}" if tag[0].isdigit() else f"#{tag}" for tag in filter(None, tags)}
