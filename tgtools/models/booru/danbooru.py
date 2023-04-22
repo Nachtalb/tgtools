@@ -2,16 +2,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, PrivateAttr
+from pydantic import PrivateAttr
 
-from tgtools.api import HOSTS
-from tgtools.utils.urls.builder import URLTemplateBuilder
+from tgtools.models.booru.common import CommonPostInfo
+from tgtools.models.file_summary import URLFileSummary
 
 if TYPE_CHECKING:
-    from tgtools.api.danbooru import DanbooruApi
-
-from .booru_post import BooruPost, CommonInfo
-from .file_summary import URLFileSummary
+    from tgtools.api.booru.danbooru import DanbooruApi
 
 
 class DanbooruFileSummary(URLFileSummary):
@@ -33,7 +30,7 @@ class DanbooruFileSummary(URLFileSummary):
         return self.file_ext == "zip"
 
 
-class DanbooruPost(BaseModel, CommonInfo, BooruPost):
+class DanbooruPost(CommonPostInfo):
     """
     A class representing a Danbooru post.
 
@@ -83,82 +80,46 @@ class DanbooruPost(BaseModel, CommonInfo, BooruPost):
         bit_flags (int): The bit flags of the post.
     """
 
-    id: int
-    created_at: datetime
-    updated_at: datetime
     uploader_id: int
     approver_id: int | None
-    tag_string: str
+
+    pixiv_id: int | None
+
+    large_file_url: str | None
+    preview_file_url: str | None
+    md5: str | None
+
+    up_score: int
+    down_score: int
+    fav_count: int
+
     tag_string_general: str
     tag_string_artist: str
     tag_string_copyright: str
     tag_string_character: str
     tag_string_meta: str
-    rating: str | None
-    parent_id: int | None
-    pixiv_id: int | None
-    source: str
-    md5: str | None
-    file_url: str
-    large_file_url: str | None
-    preview_file_url: str | None
-    file_ext: str
-    file_size: int
-    image_width: int
-    image_height: int
-    score: int
-    up_score: int
-    down_score: int
-    fav_count: int
     tag_count_general: int
     tag_count_artist: int
     tag_count_copyright: int
     tag_count_character: int
     tag_count_meta: int
+
     last_comment_bumped_at: datetime | None
     last_noted_at: datetime | None
+
     has_large: bool
-    has_children: bool
     has_visible_children: bool
     has_active_children: bool
+
     is_banned: bool
     is_deleted: bool
     is_flagged: bool
-    is_pending: bool
+
     bit_flags: int
 
     _api: "DanbooruApi" = PrivateAttr()
     _file_summary: DanbooruFileSummary | None = PrivateAttr(None)
-    _post_url = URLTemplateBuilder(f"{HOSTS.danbooru}/posts/{{id}}")
-
-    def __repr__(self) -> str:
-        """
-        Returns a string representation of the object.
-
-        Returns:
-            str: The string representation of the object.
-        """
-        return f"<{self.__class__.__name__} id={self.id}>"
-
-    def set_api(self, api: "DanbooruApi") -> None:
-        """
-        Sets the API instance.
-
-        Args:
-            api (DanbooruApi): The API instance.
-        """
-        self._api = api
-        self._post_url = URLTemplateBuilder(f"{self._api.url}/posts/{{id}}")
-
-    @property
-    def tags(self) -> set[str]:
-        """
-        Get all the tags of the post (excluding rating tags).
-
-        Returns:
-            set[str]: All the tags as a set of strings.
-        """
-        return set(self.tag_string.split())
+    _post_url_path = PrivateAttr("/posts/{{id}}")
 
     @property
     def tags_general(self) -> set[str]:
@@ -246,8 +207,8 @@ class DanbooruPost(BaseModel, CommonInfo, BooruPost):
                 url=self.file_url,
                 file_name=Path(self.filename),
                 size=self.file_size,
-                height=self.image_height,
-                width=self.image_width,
+                height=self.height,
+                width=self.width,
                 download_method=self.download,  # pyright: ignore[reportGeneralTypeIssues]
                 iter_download_method=self.iter_download,  # pyright: ignore[reportGeneralTypeIssues]
             )

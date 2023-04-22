@@ -1,18 +1,16 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import PrivateAttr
 
-from tgtools.api import HOSTS
-from tgtools.models.booru_post import BooruPost, CommonInfo, TagsNotCategorised
+from tgtools.models.booru.common import CommonPostInfo
 from tgtools.models.file_summary import URLFileSummary
-from tgtools.utils.urls.builder import URLTemplateBuilder
 
 if TYPE_CHECKING:
-    from tgtools.api.yandere import YandereApi
+    from tgtools.api.booru.yandere import YandereApi
 
 
-class YanderePost(BaseModel, TagsNotCategorised, CommonInfo, BooruPost):
+class YanderePost(CommonPostInfo):
     """
     A class representing a Yandere post.
 
@@ -22,7 +20,7 @@ class YanderePost(BaseModel, TagsNotCategorised, CommonInfo, BooruPost):
         approver_id (int | None): The ID of the approver, if any.
         author (str): The author of the post.
         change (int): The change number of the post.
-        created_at (int): The post creation timestamp.
+        created_at (datetime): The post creation timestamp.
         creator_id (int): The ID of the creator.
         file_ext (str): The file extension.
         file_size (int): The file size in bytes.
@@ -59,99 +57,51 @@ class YanderePost(BaseModel, TagsNotCategorised, CommonInfo, BooruPost):
         source (str): The source of the post.
         status (str): The status of the post.
         tag_string (str): The tags of the post.
-        updated_at (int): The post update timestamp.
+        updated_at (datetime): The post update timestamp.
         width (int): The image width in pixels.
     """
 
-    actual_preview_height: int
-    actual_preview_width: int
     approver_id: int | None
     author: str
     change: int
-    created_at: int
     creator_id: int
-    file_ext: str
-    file_size: int
-    file_url: str
+
     frames: list
     frames_pending: list
     frames_pending_string: str
     frames_string: str
-    has_children: bool
-    height: int
-    id: int
+
     is_held: bool
     is_note_locked: bool
-    is_pending: bool
     is_rating_locked: bool
     is_shown_in_index: bool
+
+    last_commented_at: int
+    last_noted_at: int
+
+    md5: str
+
     jpeg_file_size: int
     jpeg_height: int
     jpeg_url: str
     jpeg_width: int
-    last_commented_at: int
-    last_noted_at: int
-    md5: str
-    parent_id: int | None
-    preview_height: int
+
     preview_url: str
+    preview_height: int
     preview_width: int
-    rating: str
+    actual_preview_height: int
+    actual_preview_width: int
+
     sample_file_size: int
     sample_height: int
     sample_url: str
     sample_width: int
-    score: int
-    source: str
+
     status: str
-    tag_string: str = Field(alias="tags")
-    updated_at: int
-    width: int
 
     _api: "YandereApi" = PrivateAttr()
-    _post_url = URLTemplateBuilder(f"{HOSTS.yandere}/post/show/{{id}}")
+    _post_url_path = PrivateAttr("/post/show/{{id}}")
     _file_summary: URLFileSummary | None = PrivateAttr(None)
-
-    def __repr__(self) -> str:
-        """
-        Returns a string representation of the object.
-
-        Returns:
-            str: The string representation of the object.
-        """
-        return f"<{self.__class__.__name__} id={self.id}>"
-
-    def set_api(self, api: "YandereApi") -> None:
-        """
-        Sets the API instance.
-
-        Args:
-            api (YandereApi): The API instance.
-        """
-        self._api = api
-        self._post_url = URLTemplateBuilder(f"{self._api.url}/post/show/{{id}}")
-
-    @property
-    def tags(self) -> set[str]:
-        """
-        Get all the tags of the post (excluding rating tags).
-
-        Returns:
-            set[str]: All the tags as a set of strings.
-        """
-        return set(self.tag_string.split())
-
-    @property
-    def is_bad(self) -> bool:
-        """
-        Check if the post is bad.
-
-        Note: Yandere doesn't have hidden posts like other boorus, thus this is always False
-
-        Returns:
-            bool: True if the post is bad, False otherwise.
-        """
-        return False
 
     @property
     def file_summary(self) -> URLFileSummary:
@@ -162,16 +112,7 @@ class YanderePost(BaseModel, TagsNotCategorised, CommonInfo, BooruPost):
             URLFileSummary: The file summary as a DanbooruFileSummary object.
         """
         if not self._file_summary:
-            self._file_summary = URLFileSummary(
-                url=self.file_url,
-                file_name=Path(self.filename),
-                size=self.file_size,
-                height=self.height,
-                width=self.width,
-                download_method=self.download,  # pyright: ignore[reportGeneralTypeIssues]
-                iter_download_method=self.iter_download,  # pyright: ignore[reportGeneralTypeIssues]
-            )
-
+            self._file_summary = super().file_summary
             if not self._file_summary.is_image:
                 self._file_summary = URLFileSummary(
                     url=self.sample_url,

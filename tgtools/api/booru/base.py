@@ -1,13 +1,14 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from io import BytesIO
 from pathlib import Path
-from typing import Any, AsyncGenerator, Generic, TypeVar, Union
+from typing import Any, AsyncGenerator, Generic, Type, TypeVar
 
 from aiohttp import BasicAuth, ClientError, ClientSession
 from aiopath import AsyncPath
 from yarl import URL
 
-from tgtools.models.booru_post import BooruPost
+from tgtools.models.booru.base import BooruPost
+from tgtools.utils.misc import BooruJSON
 from tgtools.utils.urls.builder import RequestDict, URLTemplateBuilder
 
 T_Post = TypeVar("T_Post", bound=BooruPost)
@@ -19,9 +20,6 @@ class BooruError(ClientError):
     """
 
     pass
-
-
-JSON = Union[dict[str, Any], list[dict[str, Any]]]
 
 
 class BooruApi(Generic[T_Post], metaclass=ABCMeta):
@@ -37,32 +35,33 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
     _post_url = URLTemplateBuilder("https://example.com/post/{id}.json")
     _posts_url = URLTemplateBuilder("https://example.com/posts.json")
 
+    _cls: Type[T_Post]
+
     def __init__(
         self,
-        session: ClientSession | None = None,
+        host: str,
+        session: ClientSession,
+        _post_class: Type[T_Post],
         auth: BasicAuth | None = None,
-        host: str = "",
     ):
         """
         Initialise a DanbooruApi instance.
 
         Args:
-            session (ClientSession | None): An aiohttp ClientSession. If None, a new session will be created.
-            auth (BasicAuth | None): Basic authentication object.
             host (str): The base URL for the Danbooru API.
-
-        Raises:
-            ValueError: If only one of the user and api_key is provided.
+            session (ClientSession): An aiohttp ClientSession.
+            _post_class (Type[T_Post]): The Post class used for this api.
+            auth (BasicAuth, optional): Basic authentication object.
+            auth (BasicAuth, optional): Basic authentication object.
         """
-        self.session = session or ClientSession()
+        self.session = session
 
         self.url = URL(host)
         self.auth = auth
 
-    async def close(self):
-        await self.session.close()
+        self._post_class = _post_class
 
-    async def _request(self, request: RequestDict) -> JSON | None:
+    async def _request(self, request: RequestDict) -> BooruJSON | None:
         """
         Make a request to the API.
 
@@ -76,7 +75,6 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
             data = await response.json()
         return data
 
-    @abstractmethod
     def _convert_post(self, data: dict[str, Any]) -> T_Post:
         """
         Convert the API response data into a Post instance.
@@ -87,7 +85,9 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         Returns:
             T_Post: A Post instance created from the data.
         """
-        ...
+        post = self._post_class.parse_obj(data)
+        post.set_api(self)
+        return post
 
     async def posts(self, tags: list[str] = [], limit: int = 10) -> list[T_Post]:
         """
@@ -118,6 +118,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         url = self._post_url.url(id=id).build()
         if (post := await self._request(url)) and isinstance(post, dict):
             return self._convert_post(post)
+        return None
 
     async def download(self, url: str, out: Path | None = None) -> Path | BytesIO:
         """
