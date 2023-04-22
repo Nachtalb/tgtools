@@ -224,7 +224,7 @@ class BooruPost(metaclass=ABCMeta):
         Returns:
             URL: The post URL.
         """
-        return self._post_url.url(id=id).build_url()
+        return self._post_url.url(id=self.id).build_url()
 
     @abstractproperty
     def rating_full(self) -> str | None:
