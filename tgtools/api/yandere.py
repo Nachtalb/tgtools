@@ -5,7 +5,7 @@ from aiohttp import BasicAuth, ClientSession
 from tgtools.api import HOSTS
 from tgtools.api.booru_api import BooruApi
 from tgtools.models.yandere_post import YanderePost
-from tgtools.utils.url import URLTemplateBuilder
+from tgtools.utils.urls.builder import URLTemplateBuilder
 
 
 class YandereApi(BooruApi[YanderePost]):

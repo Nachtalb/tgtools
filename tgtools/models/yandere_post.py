@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, PrivateAttr
 from tgtools.api import HOSTS
 from tgtools.models.booru_post import BooruPost, CommonInfo, TagsNotCategorised
 from tgtools.models.file_summary import URLFileSummary
-from tgtools.utils.url import URLTemplateBuilder
+from tgtools.utils.urls.builder import URLTemplateBuilder
 
 if TYPE_CHECKING:
     from tgtools.api.yandere import YandereApi

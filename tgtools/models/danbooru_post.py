@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from pydantic import BaseModel, PrivateAttr
 
 from tgtools.api import HOSTS
-from tgtools.utils.url import URLTemplateBuilder
+from tgtools.utils.urls.builder import URLTemplateBuilder
 
 if TYPE_CHECKING:
     from tgtools.api.danbooru import DanbooruApi

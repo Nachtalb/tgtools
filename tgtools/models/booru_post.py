@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, AsyncGenerator
 from pydantic import PrivateAttr
 from yarl import URL
 
-from tgtools.utils.url import URLTemplateBuilder
+from tgtools.utils.urls.builder import URLTemplateBuilder
 
 if TYPE_CHECKING:
     from tgtools.api.booru_api import BooruApi

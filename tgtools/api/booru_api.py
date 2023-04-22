@@ -8,7 +8,7 @@ from aiopath import AsyncPath
 from yarl import URL
 
 from tgtools.models.booru_post import BooruPost
-from tgtools.utils.url import RequestDict, URLTemplateBuilder
+from tgtools.utils.urls.builder import RequestDict, URLTemplateBuilder
 
 T_Post = TypeVar("T_Post", bound=BooruPost)
 

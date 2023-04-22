@@ -5,7 +5,7 @@ from aiohttp import BasicAuth, ClientSession
 from tgtools.api import HOSTS
 from tgtools.api.booru_api import BooruApi
 from tgtools.models.danbooru_post import DanbooruPost
-from tgtools.utils.url import URLTemplateBuilder
+from tgtools.utils.urls.builder import URLTemplateBuilder
 
 
 class DanbooruApi(BooruApi[DanbooruPost]):
