@@ -171,5 +171,4 @@ class YanderePost(BaseModel, TagsNotCategorised, CommonInfo, BooruPost):
                 download_method=self.download,  # pyright: ignore[reportGeneralTypeIssues]
                 iter_download_method=self.iter_download,  # pyright: ignore[reportGeneralTypeIssues]
             )
-            self._file_summary.url = self.best_file_url
         return self._file_summary
