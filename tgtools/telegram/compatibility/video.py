@@ -81,8 +81,8 @@ class VideoCompatibility(DocumentCompatibility):
             force_download (bool, optional): Force download the file even if it's already compatible. Defaults to False.
 
         Returns:
-            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not compatible) and
-                                                   its type.
+            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
+                                                   compatible) and its type.
         """
         if summary := (await super().make_compatible(force_download))[0]:
             return summary, Video

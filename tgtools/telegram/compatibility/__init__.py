@@ -16,8 +16,8 @@ async def make_tg_compatible(file: MediaSummary) -> tuple[FileSummary | MediaSum
         file (MediaSummary): The media file to be checked for compatibility.
 
     Returns:
-        tuple[FileSummary | MediaSummary | None, MediaType]: A tuple containing either the adjusted file summary and its type.
-                                                             None if the file is not compatible in any way.
+        tuple[FileSummary | MediaSummary | None, MediaType]: A tuple containing either the adjusted file summary and
+                                                             its type. None if the file is not compatible in any way.
     """
     if file.is_image:
         compatibility = ImageCompatibility(file)

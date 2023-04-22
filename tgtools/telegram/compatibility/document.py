@@ -18,8 +18,8 @@ class DocumentCompatibility(MediaCompatibility):
             force_download (bool, optional): Force download the file even if it's already compatible. Defaults to False.
 
         Returns:
-            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not compatible) and
-                                                   its type.
+            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
+                                                   compatible) and its type.
         """
         if self.file.size > self.MAX_SIZE_UPLOAD:
             return None, None

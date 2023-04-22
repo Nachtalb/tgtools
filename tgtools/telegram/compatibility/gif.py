@@ -16,14 +16,14 @@ class GifCompatibility(VideoCompatibility):
 
     async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:
         """
-        Make the GIF file compatible with Telegram by converting it to MP4 format if needed and downloading if necessary.
+        Make the GIF file compatible by converting it to MP4 format if needed and downloading if necessary.
 
         Args:
             force_download (bool, optional): Force download the file even if it's already compatible. Defaults to False.
 
         Returns:
-            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not compatible) and
-                                                   its type.
+            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
+                                                   compatible) and its type.
         """
         if self.file.file_ext == "webm":
             if isinstance(self.file, URLFileSummary):

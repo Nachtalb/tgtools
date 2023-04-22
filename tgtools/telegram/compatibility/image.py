@@ -153,15 +153,15 @@ class ImageCompatibility(MediaCompatibility):
 
         The following cases are handled:
         1. If the aspect ratio is too drastic, the image is sent as a document.
-        2. If the image needs processing (due to resolution, aspect ratio, file size, or format), the image is processed.
+        2. Further process the image due to resolution, aspect ratio, file size or format.
         3. If the force_download flag is set and the file is a URLFileSummary, download the file.
 
         Args:
             force_download (bool, optional): Force download the file even if it's already compatible. Defaults to False.
 
         Returns:
-            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not compatible) and
-                                                   its type.
+            tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
+                                                   compatible) and its type.
         """
         if force_download and isinstance(self.file, URLFileSummary):
             self.file = await self.download()
@@ -180,7 +180,6 @@ class ImageCompatibility(MediaCompatibility):
             return self.file, PhotoSize
 
         with Image.open(self.file.file) as image:
-
             if self.is_webp():
                 image = self.convert_to_jpeg(image)
 

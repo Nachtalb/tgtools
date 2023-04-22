@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from io import BytesIO
-from typing import Awaitable, Type
+from typing import Type
 
 from telegram import Document, PhotoSize, Video
 

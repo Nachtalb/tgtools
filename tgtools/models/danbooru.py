@@ -248,7 +248,8 @@ class Post(BaseModel):
             out (Path | None): The output path for the downloaded file, if any.
 
         Returns:
-            BytesIO | Path: The downloaded file as a BytesIO object if no output path is provided, otherwise the output path.
+            BytesIO | Path: The downloaded file as a BytesIO object if no output path is provided,
+                            otherwise the output path.
         """
         return await self._api.download(self.best_file_url, out)
 
@@ -263,7 +264,8 @@ class Post(BaseModel):
             chunk_size (int, optional): The size of the chunks to download. Defaults to 1024 * 1024.
 
         Yields:
-            AsyncGenerator[BytesIO | Path, None]: The downloaded file as a BytesIO object if no output path is provided, otherwise the output path, in chunks.
+            AsyncGenerator[BytesIO | Path, None]: The downloaded file as a BytesIO object if no output path is
+                                                  provided, otherwise the output path, in chunks.
         """
         async for item in self._api.iter_download(self.best_file_url, out, chunk_size):
             yield item

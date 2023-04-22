@@ -1,6 +1,6 @@
 from io import BytesIO
 from pathlib import Path
-from typing import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
+from typing import AsyncGenerator, Awaitable, Callable
 
 from pydantic import BaseModel
 
@@ -55,7 +55,7 @@ class Summary(BaseModel):
 
 class FileSummary(Summary):
     """
-    A summary of a file containing the file itself as a BytesIO object, in addition to the attributes of the Summary class.
+    A summary of a file containing the file itself, in addition to the attributes of the Summary class.
 
     Attributes:
         file (BytesIO): The file as a BytesIO object.
