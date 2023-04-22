@@ -59,7 +59,7 @@ class URLBuilder:
 
     def __init__(self, url: str):
         self._url = url
-        self._params = {}
+        self._params: dict[str, Any] = {}
         self._data = None
         self._method = "GET"
 
@@ -86,7 +86,10 @@ class URLBuilder:
         Returns:
             URLBuilder: The URLBuilder instance.
         """
-        self.data.update(data)
+        if isinstance(self._data, dict) and isinstance(data, dict):
+            self._data.update(data)
+        else:
+            self._data = data
         return self
 
     def method(self, method: str) -> "URLBuilder":

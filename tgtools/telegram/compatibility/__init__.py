@@ -1,5 +1,5 @@
 from tgtools.models.file_summary import FileSummary
-from tgtools.telegram.compatibility.base import MediaSummary, MediaType
+from tgtools.telegram.compatibility.base import MediaCompatibility, MediaSummary, MediaType
 from tgtools.telegram.compatibility.document import DocumentCompatibility
 from tgtools.telegram.compatibility.gif import GifCompatibility
 from tgtools.telegram.compatibility.image import ImageCompatibility
@@ -22,6 +22,7 @@ async def make_tg_compatible(
         tuple[FileSummary | MediaSummary | None, MediaType]: A tuple containing either the adjusted file summary and
                                                              its type. None if the file is not compatible in any way.
     """
+    compatibility: MediaCompatibility
     if file.is_image:
         compatibility = ImageCompatibility(file)
     elif file.is_video:

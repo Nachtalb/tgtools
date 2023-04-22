@@ -42,7 +42,7 @@ class ImageCompatibility(MediaCompatibility):
         """
         return self.file.ratio_hw >= self.MAX_IMAGE_RATIO or self.file.ratio_wh >= self.MAX_IMAGE_RATIO
 
-    def file_size_too_big(self, max_size: tuple[int, int] = tuple()) -> bool:
+    def file_size_too_big(self, max_size: tuple[int, int] = (0, 0)) -> bool:
         """
         Check if the file size of the image is too big.
 
@@ -52,7 +52,7 @@ class ImageCompatibility(MediaCompatibility):
         Returns:
             bool: True if the file size exceeds the maximum allowed, False otherwise.
         """
-        if max_size:
+        if any(max_size):
             return self.file.size > max_size[0] or (
                 isinstance(self.file, URLFileSummary) and self.file.size > max_size[1]
             )
@@ -79,7 +79,7 @@ class ImageCompatibility(MediaCompatibility):
         """
         return self.resolution_too_heigh() or self.ratio_too_drastic() or self.file_size_too_big() or self.is_webp()
 
-    def decrease_file_size(self, image: Image.Image, max_size: tuple[int, int] = tuple()):
+    def decrease_file_size(self, image: Image.Image, max_size: tuple[int, int] = (0, 0)):
         """
         Continuously reduce the image resolution until the file size is small enough to upload.
 

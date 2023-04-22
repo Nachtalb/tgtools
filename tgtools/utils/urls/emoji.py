@@ -108,9 +108,11 @@ def host_name(url: str | URL, with_emoji: bool = False, fallback: str = FALLBACK
         name = HOST_MAP[site_key]["name"]
         emoji = emojize(HOST_MAP[site_key]["emoji"]) if with_emoji else fallback
     else:
-        name = url.host.capitalize() if url.host else str(url)
-        if name and name[:4] == "Www.":
-            name = name[4:].capitalize()
+        name = str(url.host if url.host else url)
+        if name and name[:4] == "www.":
+            name = name[4:]
         emoji = emojize(fallback)
+        name = name.capitalize()
+    name = str(name)
 
     return f"{emoji} {name}" if with_emoji else name
