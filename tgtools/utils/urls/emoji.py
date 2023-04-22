@@ -37,6 +37,16 @@ HOST_MAP = {
         "emoji": ":woman_dancing:",
         "urls": ["tumblr.com", "www.tumblr.com", "assets.tumblr.com"],
     },
+    "yandere": {
+        "name": "Yandere",
+        "emoji": ":sparkles:",
+        "urls": ["yande.re", "files.yande.re"],
+    },
+    "fanbox": {
+        "name": "Fanbox",
+        "emoji": ":P_button:",
+        "urls": ["fanbox.cc", "www.fanbox.ce"],
+    },
 }
 
 URL_MAP = {url: key for key, data in HOST_MAP.items() for url in data["urls"]}
@@ -99,6 +109,8 @@ def host_name(url: str | URL, with_emoji: bool = False, fallback: str = FALLBACK
         emoji = emojize(HOST_MAP[site_key]["emoji"]) if with_emoji else fallback
     else:
         name = url.host.capitalize() if url.host else str(url)
+        if name and name[:4] == "Www.":
+            name = name[4:].capitalize()
         emoji = emojize(fallback)
 
     return f"{emoji} {name}" if with_emoji else name
