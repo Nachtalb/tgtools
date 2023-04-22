@@ -8,12 +8,15 @@ from tgtools.telegram.compatibility.video import VideoCompatibility
 __all__ = ["make_tg_compatible"]
 
 
-async def make_tg_compatible(file: MediaSummary) -> tuple[FileSummary | MediaSummary | None, MediaType]:
+async def make_tg_compatible(
+    file: MediaSummary, force_download: bool = False
+) -> tuple[FileSummary | MediaSummary | None, MediaType]:
     """
     Make sure the file is compatible with Telegram.
 
     Args:
         file (MediaSummary): The media file to be checked for compatibility.
+        force_download (bool): Force download the file (defaults to False).
 
     Returns:
         tuple[FileSummary | MediaSummary | None, MediaType]: A tuple containing either the adjusted file summary and
@@ -28,4 +31,4 @@ async def make_tg_compatible(file: MediaSummary) -> tuple[FileSummary | MediaSum
     else:
         compatibility = DocumentCompatibility(file)
 
-    return await compatibility.make_compatible()
+    return await compatibility.make_compatible(force_download=force_download)
