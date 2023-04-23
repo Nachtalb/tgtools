@@ -1,4 +1,5 @@
 from typing import Generic, Type
+from types import new_class
 
 from aiohttp import BasicAuth, ClientSession
 
@@ -82,9 +83,9 @@ def create_v1_api_subclass(
         )
 
     # Define a new class with the provided name, inheriting from V1Api
-    new_class = type(class_name, (GenericV1Api[T_Post],), {"__init__": custom_init})
+    cls = new_class(class_name, (GenericV1Api[T_Post],), exec_body=lambda ns: ns.update({"__init__": custom_init}))
 
-    return new_class
+    return cls
 
 
 YandereApi = create_v1_api_subclass("YandereApi", YanderePost, YandereStyleVersion, HOSTS.yandere)
