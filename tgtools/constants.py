@@ -19,10 +19,10 @@ class MinorVersion:
 class GelbooruStyleVersion(MinorVersion):
     post_api_path = "/index.php?page=dapi&s=post&q=index&json=1&id={id}"
     posts_api_path = "/index.php?page=dapi&s=post&q=index&json=1"
-    post_gui_path = "index.php?page=post&s=view&id={id}"
+    post_gui_path = "/index.php?page=post&s=view&id={id}"
 
 
 class YandereStyleVersion(MinorVersion):
     post_api_path = "/post.json?tags=id:{id}"
     posts_api_path = "/post.json"
-    post_gui_path = "post/show/{id}"
+    post_gui_path = "/post/show/{id}"
