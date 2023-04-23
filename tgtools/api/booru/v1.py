@@ -3,7 +3,7 @@ from typing import Generic, Type
 from aiohttp import BasicAuth, ClientSession
 
 from tgtools.api.booru.base import BooruApi, T_Post
-from tgtools.api.booru.constants import HOSTS, GelbooruStyleVersion, MinorVersion, YandereStyleVersion
+from tgtools.api.booru.constants import HOSTS, MinorVersion, YandereStyleVersion
 from tgtools.models.booru.threedbooru import ThreeDBooruPost
 from tgtools.models.booru.yandere import YanderePost
 from tgtools.utils.urls.builder import URLTemplateBuilder
@@ -24,7 +24,7 @@ class V1Api(Generic[T_Post], BooruApi[T_Post]):
         host: str,
         session: ClientSession,
         _post_class: Type[T_Post],
-        minor_version: Type[MinorVersion] = GelbooruStyleVersion,
+        minor_version: Type[MinorVersion] = YandereStyleVersion,
         auth: BasicAuth | None = None,
     ):
         super().__init__(host=host, session=session, _post_class=_post_class, auth=auth)
@@ -50,18 +50,31 @@ class V1Api(Generic[T_Post], BooruApi[T_Post]):
         return None
 
 
+class GenericV1Api(Generic[T_Post], V1Api[T_Post]):
+    def __init__(
+        self,
+        session: ClientSession,
+        auth: BasicAuth | None = None,
+        host: str = "",
+    ) -> None:
+        ...
+
+
 def create_v1_api_subclass(
-    class_name: str, post_class: Type[T_Post], minor_version: Type[MinorVersion], default_host: str
-) -> Type[V1Api[T_Post]]:
-    # Define the custom __init__ method with type annotations
+    class_name: str,
+    post_class: Type[T_Post],
+    minor_version: Type[MinorVersion],
+    default_host: str,
+) -> Type[GenericV1Api[T_Post]]:
     def custom_init(
         self,
         session: ClientSession,
         auth: BasicAuth | None = None,
+        host: str = default_host,
     ) -> None:
         V1Api.__init__(
             self,
-            host=default_host,
+            host=host,
             session=session,
             _post_class=post_class,
             minor_version=minor_version,
@@ -69,7 +82,7 @@ def create_v1_api_subclass(
         )
 
     # Define a new class with the provided name, inheriting from V1Api
-    new_class = type(class_name, (V1Api[T_Post],), {"__init__": custom_init})
+    new_class = type(class_name, (GenericV1Api[T_Post],), {"__init__": custom_init})
 
     return new_class
 
