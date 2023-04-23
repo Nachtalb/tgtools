@@ -3,7 +3,7 @@ from aiohttp import BasicAuth, ClientSession
 from tgtools.api.booru import HOSTS
 from tgtools.api.booru.base import BooruApi, BooruError
 from tgtools.models.booru import DanbooruPost
-from tgtools.utils.misc import BooruJSON
+from tgtools.utils.misc import JSONObject
 from tgtools.utils.urls.builder import RequestDict, URLTemplateBuilder
 
 
@@ -24,7 +24,7 @@ class DanbooruApi(BooruApi[DanbooruPost]):
         self._post_url = URLTemplateBuilder(f"{self.url}/posts/{{id}}.json")
         self._posts_url = URLTemplateBuilder(f"{self.url}/posts.json")
 
-    async def _request(self, request: RequestDict) -> BooruJSON | None:
+    async def _request(self, request: RequestDict) -> JSONObject | None:
         """
         Make a request to the API.
 

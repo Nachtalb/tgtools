@@ -46,7 +46,7 @@ class V1Api(Generic[T_Post], BooruApi[T_Post]):
         """
         url = self._post_url.url(id=id).build()
         if (post := await self._request(url)) and isinstance(post, list):
-            return self._convert_post(post[0])
+            return self._convert_post(post[0])  # type: ignore
         return None
 
 
@@ -76,4 +76,3 @@ def create_v1_api_subclass(
 
 YandereApi = create_v1_api_subclass("YandereApi", YanderePost, YandereStyleVersion, HOSTS.yandere)
 ThreeDBooruApi = create_v1_api_subclass("ThreeDBooruApi", YanderePost, YandereStyleVersion, HOSTS.threedbooru)
-GelbooruApi = create_v1_api_subclass("GelbooruApi", GelbooruPost, GelbooruStyleVersion, HOSTS.gelbooru)

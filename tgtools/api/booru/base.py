@@ -1,14 +1,14 @@
 from abc import ABCMeta
 from io import BytesIO
 from pathlib import Path
-from typing import Any, AsyncGenerator, Generic, Type, TypeVar
+from typing import AsyncGenerator, Generic, Type, TypeVar
 
 from aiohttp import BasicAuth, ClientError, ClientSession
 from aiopath import AsyncPath
 from yarl import URL
 
 from tgtools.models.booru.base import BooruPost
-from tgtools.utils.misc import BooruJSON
+from tgtools.utils.misc import JSONObject, JSONPrimitive
 from tgtools.utils.urls.builder import RequestDict, URLTemplateBuilder
 
 T_Post = TypeVar("T_Post", bound=BooruPost)
@@ -61,7 +61,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
 
         self._post_class = _post_class
 
-    async def _request(self, request: RequestDict) -> BooruJSON | None:
+    async def _request(self, request: RequestDict) -> JSONObject | None:
         """
         Make a request to the API.
 
@@ -75,7 +75,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
             data = await response.json()
         return data
 
-    def _convert_post(self, data: dict[str, Any]) -> T_Post:
+    def _convert_post(self, data: dict[str, JSONPrimitive]) -> T_Post:
         """
         Convert the API response data into a Post instance.
 
@@ -102,7 +102,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         """
         url = self._posts_url.url().query(limit=limit, tags=" ".join(tags)).build()
         if (posts := await self._request(url)) and isinstance(posts, list):
-            return list(map(self._convert_post, posts))
+            return list(map(self._convert_post, posts))  # type: ignore
         return []
 
     async def post(self, id: int) -> T_Post | None:
@@ -117,7 +117,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         """
         url = self._post_url.url(id=id).build()
         if (post := await self._request(url)) and isinstance(post, dict):
-            return self._convert_post(post)
+            return self._convert_post(post)  # type: ignore
         return None
 
     async def download(self, url: str, out: Path | None = None) -> Path | BytesIO:
