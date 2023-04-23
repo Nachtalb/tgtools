@@ -47,6 +47,8 @@ class CommonPostInfo(BooruPost):
     width: int = Field(alias="image_width")
     height: int = Field(alias="image_height")
 
+    md5: str | None
+
     file_size: int
     file_url: str
     file_ext: str

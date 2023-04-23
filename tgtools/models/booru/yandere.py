@@ -79,8 +79,6 @@ class YanderePost(CommonPostInfo):
     last_commented_at: int
     last_noted_at: int
 
-    md5: str
-
     jpeg_file_size: int
     jpeg_height: int
     jpeg_url: str

@@ -87,7 +87,6 @@ class DanbooruPost(CommonPostInfo):
 
     large_file_url: str | None
     preview_file_url: str | None
-    md5: str | None
 
     up_score: int
     down_score: int
