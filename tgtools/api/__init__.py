@@ -1,3 +1,3 @@
-class HOSTS:
-    danbooru = "https://danbooru.donmai.us"
-    yandere = "https://yande.re"
+from tgtools.api.booru import DanbooruApi, YandereApi, V1Api
+
+__all__ = ["DanbooruApi", "YandereApi", "V1Api"]

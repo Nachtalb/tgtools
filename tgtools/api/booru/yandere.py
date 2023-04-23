@@ -1,8 +1,7 @@
 from aiohttp import BasicAuth, ClientSession
 
-from tgtools.api import HOSTS
-from tgtools.api.booru.v1 import V1Api
-from tgtools.models.booru.yandere import YanderePost
+from tgtools.api.booru import HOSTS, V1Api
+from tgtools.models.booru import YanderePost
 
 
 class YandereApi(V1Api[YanderePost]):
