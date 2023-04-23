@@ -4,7 +4,7 @@ from types import new_class
 from aiohttp import BasicAuth, ClientSession
 
 from tgtools.api.booru.base import BooruApi, T_Post
-from tgtools.api.booru.constants import HOSTS, MinorVersion, YandereStyleVersion
+from tgtools.constants import HOSTS, MinorVersion, YandereStyleVersion
 from tgtools.models.booru.threedbooru import ThreeDBooruPost
 from tgtools.models.booru.yandere import YanderePost
 from tgtools.utils.urls.builder import URLTemplateBuilder
