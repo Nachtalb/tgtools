@@ -3,11 +3,12 @@ from typing import TYPE_CHECKING
 
 from pydantic import PrivateAttr
 
+from tgtools.api.booru import YandereStyleVersion
 from tgtools.models.booru.common import CommonPostInfo
 from tgtools.models.file_summary import URLFileSummary
 
 if TYPE_CHECKING:
-    from tgtools.api.booru.yandere import YandereApi
+    from tgtools.api.booru.v1 import V1Api
 
 
 class YanderePost(CommonPostInfo):
@@ -97,8 +98,8 @@ class YanderePost(CommonPostInfo):
 
     status: str
 
-    _api: "YandereApi" = PrivateAttr()
-    _post_url_path = PrivateAttr("/post/show/{{id}}")
+    _api: "V1Api[YanderePost]" = PrivateAttr()
+    _post_url_path = PrivateAttr(YandereStyleVersion.post_gui_path)
     _file_summary: URLFileSummary | None = PrivateAttr(None)
 
     @property
@@ -107,11 +108,11 @@ class YanderePost(CommonPostInfo):
         Get the file summary of the post.
 
         Returns:
-            URLFileSummary: The file summary as a DanbooruFileSummary object.
+            URLFileSummary: The file summary object.
         """
         if not self._file_summary:
             self._file_summary = super().file_summary
-            if not self._file_summary.is_image:
+            if not self._file_summary.is_image and self.sample_url:
                 self._file_summary = URLFileSummary(
                     url=self.sample_url,
                     file_name=Path(self.filename),

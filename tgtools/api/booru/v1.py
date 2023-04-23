@@ -1,28 +1,12 @@
 from typing import Generic, Type
 
 from aiohttp import BasicAuth, ClientSession
-from attr import dataclass
 
-from tgtools.api.booru import HOSTS
+from tgtools.api.booru import HOSTS, GelbooruStyleVersion, MinorVersion, YandereStyleVersion
 from tgtools.api.booru.base import BooruApi, T_Post
+from tgtools.models.booru.gelbooru import GelbooruPost
 from tgtools.models.booru.yandere import YanderePost
 from tgtools.utils.urls.builder import URLTemplateBuilder
-
-
-@dataclass
-class MinorVersion:
-    post_api_path: str
-    posts_api_path: str
-
-
-class GelbooruStyleVersion(MinorVersion):
-    post_api_path = "/index.php?page=dapi&s=post&q=index&json=1&id={id}"
-    posts_api_path = "/index.php?page=dapi&s=post&q=index&json=1"
-
-
-class YandereStyleVersion(MinorVersion):
-    post_api_path = "/post.json?tags=id:{id}"
-    posts_api_path = "/post.json"
 
 
 class V1Api(Generic[T_Post], BooruApi[T_Post]):
@@ -91,3 +75,5 @@ def create_v1_api_subclass(
 
 
 YandereApi = create_v1_api_subclass("YandereApi", YanderePost, YandereStyleVersion, HOSTS.yandere)
+ThreeDBooruApi = create_v1_api_subclass("ThreeDBooruApi", YanderePost, YandereStyleVersion, HOSTS.threedbooru)
+GelbooruApi = create_v1_api_subclass("GelbooruApi", GelbooruPost, GelbooruStyleVersion, HOSTS.gelbooru)
