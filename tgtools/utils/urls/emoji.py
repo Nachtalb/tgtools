@@ -112,7 +112,5 @@ def host_name(url: str | URL, with_emoji: bool = False, fallback: str = FALLBACK
         if name and name[:4] == "www.":
             name = name[4:]
         emoji = emojize(fallback)
-        name = name.capitalize()
-    name = str(name)
 
-    return f"{emoji} {name}" if with_emoji else name
+    return f"{emoji} {name}" if with_emoji else str(name)
