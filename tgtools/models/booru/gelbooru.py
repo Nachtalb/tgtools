@@ -8,7 +8,7 @@ from tgtools.models.booru.common import CommonPostInfo
 from tgtools.models.file_summary import URLFileSummary
 
 if TYPE_CHECKING:
-    from tgtools.api.booru.v1 import V1Api
+    from tgtools.api.booru.gelbooru import GelbooruApi
 
 
 class GelbooruPost(CommonPostInfo):
@@ -34,7 +34,7 @@ class GelbooruPost(CommonPostInfo):
     status: str
     title: str
 
-    _api: "V1Api[GelbooruPost]" = PrivateAttr()
+    _api: "GelbooruApi" = PrivateAttr()
 
     _post_url_path = PrivateAttr(GelbooruStyleVersion.post_gui_path)
     _file_summary: URLFileSummary | None = PrivateAttr(None)
