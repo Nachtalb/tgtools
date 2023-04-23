@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import PrivateAttr
 
-from tgtools.api.booru import YandereStyleVersion
+from tgtools.api.booru.constants import YandereStyleVersion
 from tgtools.models.booru.common import CommonPostInfo
 from tgtools.models.file_summary import URLFileSummary
 

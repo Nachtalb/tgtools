@@ -1,7 +1,7 @@
 from aiohttp import BasicAuth, ClientSession
 
-from tgtools.api.booru import HOSTS
 from tgtools.api.booru.base import BooruApi, BooruError
+from tgtools.api.booru.constants import HOSTS
 from tgtools.models.booru import DanbooruPost
 from tgtools.utils.misc import JSONObject
 from tgtools.utils.urls.builder import RequestDict, URLTemplateBuilder

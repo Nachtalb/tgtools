@@ -1,4 +1,5 @@
 from pydantic import validator
+
 from tgtools.models.booru.yandere import YanderePost
 
 

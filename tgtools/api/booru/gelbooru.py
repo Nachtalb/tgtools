@@ -1,5 +1,6 @@
 from aiohttp import BasicAuth, ClientSession
-from tgtools.api.booru import HOSTS, GelbooruStyleVersion
+
+from tgtools.api.booru.constants import HOSTS, GelbooruStyleVersion
 from tgtools.api.booru.v1 import V1Api
 from tgtools.models.booru.gelbooru import GelbooruPost
 

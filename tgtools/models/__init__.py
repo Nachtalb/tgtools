@@ -1,3 +1,3 @@
-from tgtools.models.booru import YanderePost, DanbooruPost, RATING, ThreeDBooruPost, GelbooruPost
+from tgtools.models.booru import RATING, DanbooruPost, GelbooruPost, ThreeDBooruPost, YanderePost
 
 __all__ = ["YanderePost", "DanbooruPost", "RATING", "ThreeDBooruPost", "GelbooruPost"]
