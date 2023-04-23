@@ -4,7 +4,7 @@ from aiohttp import BasicAuth, ClientSession
 
 from tgtools.api.booru import HOSTS, GelbooruStyleVersion, MinorVersion, YandereStyleVersion
 from tgtools.api.booru.base import BooruApi, T_Post
-from tgtools.models.booru.gelbooru import GelbooruPost
+from tgtools.models.booru.threedbooru import ThreeDBooruPost
 from tgtools.models.booru.yandere import YanderePost
 from tgtools.utils.urls.builder import URLTemplateBuilder
 
@@ -75,4 +75,4 @@ def create_v1_api_subclass(
 
 
 YandereApi = create_v1_api_subclass("YandereApi", YanderePost, YandereStyleVersion, HOSTS.yandere)
-ThreeDBooruApi = create_v1_api_subclass("ThreeDBooruApi", YanderePost, YandereStyleVersion, HOSTS.threedbooru)
+ThreeDBooruApi = create_v1_api_subclass("ThreeDBooruApi", ThreeDBooruPost, YandereStyleVersion, HOSTS.threedbooru)
