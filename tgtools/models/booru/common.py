@@ -1,7 +1,8 @@
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
-from pydantic import Field
+from pydantic import root_validator
 
 from tgtools.models.booru.base import BooruPost
 from tgtools.models.booru.rating import RATING
@@ -42,16 +43,29 @@ class CommonPostInfo(BooruPost):
     has_children: bool
     is_pending: bool
 
-    tag_string: str = Field(alias="tags")
+    tag_string: str
 
-    width: int = Field(alias="image_width")
-    height: int = Field(alias="image_height")
+    width: int
+    height: int
 
     md5: str | None
 
     file_size: int
     file_url: str
     file_ext: str
+
+    @root_validator(pre=True)
+    def handle_aliases(cls, values: dict[str, Any]) -> Any:
+        if "image_width" in values:
+            values["width"] = values.pop("image_width")
+
+        if "image_height" in values:
+            values["height"] = values.pop("image_height")
+
+        if "tags" in values:
+            values["tag_string"] = values.pop("tags")
+
+        return values
 
     def __repr__(self) -> str:
         """
