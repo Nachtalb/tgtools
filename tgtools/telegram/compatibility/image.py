@@ -110,6 +110,17 @@ class ImageCompatibility(MediaCompatibility):
         self.file.file = file
         file.seek(0)
 
+    def _recalculate_size(self, image: Image.Image | BytesIO):
+        """
+        Recalculate width and height of the image
+        """
+        if isinstance(image, BytesIO):
+            with Image.open(image) as p_image:
+                self.file.width, self.file.height = p_image.size
+            image.seek(0)
+        else:
+            self.file.width, self.file.height = image.size
+
     def convert_to_jpeg(self, image: Image.Image) -> Image.Image:
         """
         Convert the image to a JPEG format.
@@ -163,6 +174,10 @@ class ImageCompatibility(MediaCompatibility):
             tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
                                                    compatible) and its type.
         """
+        if isinstance(self.file, URLFileSummary) and self.file.height <= 0 and self.file.width <= 0:
+            self.file = await self.download()
+            self._recalculate_size(self.file.file)
+
         if force_download and isinstance(self.file, URLFileSummary):
             self.file = await self.download()
 

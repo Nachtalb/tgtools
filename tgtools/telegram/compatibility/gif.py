@@ -1,9 +1,8 @@
-from asyncio import subprocess
 from io import BytesIO
 
 from telegram import Video
 
-from tgtools.models.file_summary import URLFileSummary
+from tgtools.models.file_summary import FileSummary
 from tgtools.telegram.compatibility.base import MediaSummary, MediaType
 from tgtools.telegram.compatibility.video import VideoCompatibility
 
@@ -13,6 +12,18 @@ class GifCompatibility(VideoCompatibility):
     Class for checking and making GIF files compatible with Telegram.
     Inherits from DocumentCompatibility.
     """
+
+    async def remove_audio(self, data: BytesIO) -> BytesIO | None:
+        """
+        Remove all audio tracks without reencoding
+
+        Args:
+            data (BytesIO): The file to adjust as bytes
+
+        Returns:
+            The new file as BytesIO
+        """
+        return await self._run_ffmpeg(data, "-an", "-c:v", "copy")
 
     async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:
         """
@@ -25,56 +36,16 @@ class GifCompatibility(VideoCompatibility):
             tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
                                                    compatible) and its type.
         """
-        if self.file.file_ext == "webm":
-            if isinstance(self.file, URLFileSummary):
-                self.file = await self.download()
+        summary, type_ = await super().make_compatible(force_download)
+        if type_ is not Video or summary is None:
+            return None, Video
 
-            if converted := await self.webm_to_mp4(self.file.file):
+        self.file = summary
+
+        if isinstance(self.file, FileSummary) and self.file.file:
+            if converted := await self.remove_audio(self.file.file):
                 converted.seek(0)
                 self.file.file = converted
                 self.file.size = converted.getbuffer().nbytes
-            else:
-                return None, Video
 
-        return (await super().make_compatible(force_download))[0], Video
-
-    async def webm_to_mp4(self, data: BytesIO) -> BytesIO | None:
-        """
-        Convert a WebM video (in BytesIO format) to an MP4 video (in BytesIO format) asynchronously.
-
-        This function uses FFmpeg to perform the conversion. It takes the input WebM video as a BytesIO object
-        and returns the output MP4 video as a BytesIO object, or None if the conversion fails.
-
-        Args:
-            data (BytesIO): The input WebM video as a BytesIO object.
-
-        Returns:
-            BytesIO | None: The output MP4 video as a BytesIO object, or None if the conversion fails.
-
-        Examples:
-            # Assuming `webm_data` is a BytesIO object containing a valid WebM video
-            >>> mp4_data = await webm_to_mp4(webm_data)
-            # `mp4_data` will be a BytesIO object containing the converted MP4 video or None if the conversion failed
-        """
-        input_file = "-i", "pipe:0"
-        video_filter = "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2"
-        codec = "-c:v", "libx264"
-        output_format = "-f", "ismv"  # ismv is similar to mp4 but has improved movflags support basically
-        output_options = "-movflags", "+faststart", "-pix_fmt", "yuv420p"
-
-        process = await subprocess.create_subprocess_exec(
-            "ffmpeg",
-            "-y",
-            *input_file,
-            *video_filter,
-            *codec,
-            *output_options,
-            *output_format,
-            "pipe:1",
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-        )
-
-        stdout, _ = await process.communicate(data.getvalue())
-        return BytesIO(stdout) if stdout else None
+        return self.file, Video

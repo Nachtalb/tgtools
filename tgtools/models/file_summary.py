@@ -12,15 +12,14 @@ class Summary(BaseModel):
     Attributes:
         file_name (Path): The file name with its extension.
         size (int): The file size in bytes.
-        height (int): The height of the image or video.
-        width (int): The width of the image or video.
-        download_method (Callable): A callable function to download the file.
+        height (int, optional): The height of the image or video. (Defaults to -1)
+        width (int, optional): The width of the image or video. (Defaults to -1)
     """
 
     file_name: Path
     size: int
-    height: int
-    width: int
+    height: int = -1
+    width: int = -1
 
     @property
     def ratio_wh(self) -> float:
@@ -73,6 +72,9 @@ class URLFileSummary(Summary):
 
     Attributes:
         url (str): The URL of the file.
+        download_method (Callable): A callable function to download the file.
+        iter_download_method (Callable): A callable function to download the file in chunks
+            (for improved asynchronousy)
     """
 
     url: str

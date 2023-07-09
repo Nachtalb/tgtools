@@ -1,3 +1,4 @@
+from asyncio import subprocess
 from io import BytesIO
 
 import imageio
@@ -71,6 +72,74 @@ class VideoCompatibility(DocumentCompatibility):
             )
             return result
 
+    async def _run_ffmpeg(self, input: BytesIO, *arguments: str) -> BytesIO | None:
+        """
+        Run an ffmpeg command
+
+        Args:
+            input (BytesIO): Input file data
+            *arguments (list[str]): Parameters for ffmpeg command
+
+        Returns:
+            The new file as BytesIO or None if it failed
+        """
+        input_file = "-i", "pipe:0"
+
+        process = await subprocess.create_subprocess_exec(
+            "ffmpeg",
+            "-y",
+            *input_file,
+            *arguments,
+            "pipe:1",
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+
+        stdout, _ = await process.communicate(input.getvalue())
+        return BytesIO(stdout) if stdout else None
+
+    async def make_streamable(self, data: BytesIO) -> BytesIO | None:
+        """
+        Make an mp4 streamable without reencoding.
+
+        To make a mp4 file streamable all metadata must be at the front of the start. This is known as "faststart".
+        No reencoding takes place so this should be rather fast.
+
+        Args:
+            data (BytesIO): The existing mp4 data
+
+        Returns:
+            BytesIO of the new file.
+        """
+        return await self._run_ffmpeg(data, "-f", "mp4", "-c copy", "-movflags", "+faststart")
+
+    async def to_mp4(self, data: BytesIO) -> BytesIO | None:
+        """
+        Convert a any video (in BytesIO format) to an MP4 video (in BytesIO format) asynchronously.
+
+        This function uses FFmpeg to perform the conversion. This also enables streamability just like the
+        `make_streamable` method.
+
+        Args:
+            data (BytesIO): The input video as a BytesIO object.
+
+        Returns:
+            BytesIO | None: The output MP4 video as a BytesIO object, or None if the conversion fails.
+
+        Examples:
+            # Assuming `webm_data` is a BytesIO object containing a valid WebM video
+            >>> mp4_data = await webm_to_mp4(webm_data)
+            # `mp4_data` will be a BytesIO object containing the converted MP4 video or None if the conversion failed
+        """
+        video_filter = "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2"  # Make sure we have even width and height
+        codec = "-c:v", "libx264"  # Use H264 codec (faster to encode comapred to H265)
+        # output_format = "-f", "ismv"  # May not be supported (Internet Streaming Media Format)
+        output_format = "-f", "mp4"  # Use a mp4 container
+        output_options = "-movflags", "+faststart", "-pix_fmt", "yuv420p"  # Streamability and ensure supported colors
+
+        return await self._run_ffmpeg(data, *video_filter, *codec, *output_format, *output_options)
+
     async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:
         """
         Make the video file compatible with Telegram by checking its size and downloading if necessary.
@@ -85,6 +154,25 @@ class VideoCompatibility(DocumentCompatibility):
                                                    compatible) and its type.
         """
         if summary := (await super().make_compatible(force_download))[0]:
+            if self.file.file_ext != "mp4" and isinstance(self.file, URLFileSummary):
+                # Download for conversion. Telegram only supports mp4 as video format
+                self.file = await self.download()
+
+            if isinstance(self.file, FileSummary):
+                match self.file.file_ext:
+                    case "mp4", "mkv":
+                        # Fast
+                        conversion = self.make_streamable(self.file.file)
+                    case _:
+                        # Slow
+                        conversion = self.to_mp4(self.file.file)
+
+                if converted := await conversion:
+                    converted.seek(0)
+                    self.file.file = converted
+                    self.file.size = converted.getbuffer().nbytes
+                    self.file.file_name = self.file.file_name.with_suffix(".mp4")
+
             return summary, Video
         elif frame_summary := await self._get_first_frame_summary():
             return frame_summary, PhotoSize
