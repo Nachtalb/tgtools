@@ -1,6 +1,6 @@
 from io import BytesIO
 from pathlib import Path
-from typing import AsyncGenerator, Awaitable, Callable
+from typing import AsyncGenerator, Awaitable, Callable, Optional
 
 from pydantic import BaseModel
 
@@ -79,4 +79,4 @@ class URLFileSummary(Summary):
 
     url: str
     download_method: Callable[..., Awaitable[BytesIO]]
-    iter_download_method: Callable[..., AsyncGenerator[BytesIO, None]]
+    iter_download_method: Optional[Callable[..., AsyncGenerator[BytesIO, None]]] = None

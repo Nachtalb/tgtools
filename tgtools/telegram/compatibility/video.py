@@ -41,36 +41,47 @@ class VideoCompatibility(DocumentCompatibility):
         """
         Returns the first frame from self.file
 
-        It handles both URLFileSummary and FileSummary
+        It handles both URLFileSummary and FileSummary. We enforce `iter_download_method` as
+        we never don't want to download the whole video as it might be very big.
 
         Returns:
             BytesIO: The first frame of the video file.
+
+        Raises:
+            NotImplementedError if the summary has no `iter_download_method`
         """
         if isinstance(self.file, URLFileSummary):
-            async for buffer in self.file.iter_download_method():
-                try:
-                    return self._extract_first_image(buffer)
-                except IndexError:
-                    buffer.seek(0, 2)
+            if self.file.iter_download_method is not None:
+                async for buffer in self.file.iter_download_method():
+                    try:
+                        return self._extract_first_image(buffer)
+                    except IndexError:
+                        buffer.seek(0, 2)
+            else:
+                raise NotImplementedError("To download the first frame implement iter_download_method")
         else:
             return self._extract_first_image(self.file.file)
 
-    async def _get_first_frame_summary(self):
+    async def _get_first_frame_summary(self) -> FileSummary | None:
         """
         Returns the summary of the first frame of the video file.
 
         Returns:
             FileSummary: The summary of the first frame of the video file.
         """
-        if first_frame := await self._get_first_frame():
-            result = FileSummary(
-                file_name=self.file.file_name.with_stem(".jpeg"),
-                file=first_frame,
-                size=first_frame.getbuffer().nbytes,
-                width=self.file.width,
-                height=self.file.height,
-            )
-            return result
+        try:
+            if first_frame := await self._get_first_frame():
+                result = FileSummary(
+                    file_name=self.file.file_name.with_stem(".jpeg"),
+                    file=first_frame,
+                    size=first_frame.getbuffer().nbytes,
+                    width=self.file.width,
+                    height=self.file.height,
+                )
+                return result
+        except NotImplementedError:
+            pass
+        return None
 
     async def _run_ffmpeg(self, input: BytesIO, *arguments: str) -> BytesIO | None:
         """
