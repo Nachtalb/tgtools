@@ -174,12 +174,9 @@ class ImageCompatibility(MediaCompatibility):
             tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
                                                    compatible) and its type.
         """
-        if isinstance(self.file, URLFileSummary) and self.file.height <= 0 and self.file.width <= 0:
+        if (force_download or self.file.height <= 0 and self.file.width <= 0) and isinstance(self.file, URLFileSummary):
             self.file = await self.download()
             self._recalculate_size(self.file.file)
-
-        if force_download and isinstance(self.file, URLFileSummary):
-            self.file = await self.download()
 
         if self.ratio_too_drastic():
             document_size = (MediaCompatibility.MAX_SIZE_UPLOAD, MediaCompatibility.MAX_SIZE_URL)
