@@ -1,7 +1,16 @@
+from typing import TypedDict
+
 from emoji import emojize
 from yarl import URL
 
-HOST_MAP = {
+
+class Host(TypedDict):
+    name: str
+    emoji: str
+    urls: list[str]
+
+
+HOST_MAP: dict[str, Host] = {
     "twitter": {
         "name": "Twitter",
         "emoji": ":bird:",
@@ -77,7 +86,7 @@ def host_emoji(url: str | URL, fallback: str = FALLBACK_EMOJIS["picture"]) -> st
         '🅿️'
     """
     url = URL(url)
-    site_key = URL_MAP.get(url.host)
+    site_key = URL_MAP.get(url.host)  # type: ignore[arg-type]
     return emojize(HOST_MAP[site_key]["emoji"]) if site_key else emojize(fallback)
 
 
@@ -102,7 +111,7 @@ def host_name(url: str | URL, with_emoji: bool = False, fallback: str = FALLBACK
         '🅿️ Pixiv'
     """
     url = URL(url)
-    site_key = URL_MAP.get(url.host)
+    site_key = URL_MAP.get(url.host)  # type: ignore[arg-type]
 
     if site_key:
         name = HOST_MAP[site_key]["name"]

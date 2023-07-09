@@ -23,7 +23,8 @@ class BooruPost(BaseModel, metaclass=ABCMeta):
 
     id: int
 
-    _api: "BooruApi" = PrivateAttr()
+    # TODO: No idea how the correct type annotation here would be
+    _api: "BooruApi" = PrivateAttr()  # type: ignore[type-arg]
     _file_summary: URLFileSummary | None = PrivateAttr(None)
     _post_url: URLTemplateBuilder = PrivateAttr(URLTemplateBuilder("https://example.com/posts/{id}"))
     _post_url_path: str = PrivateAttr("")
@@ -37,7 +38,7 @@ class BooruPost(BaseModel, metaclass=ABCMeta):
         """
         return f"<{self.__class__.__name__} id={self.id}>"
 
-    def set_api(self, api: "BooruApi") -> None:
+    def set_api(self, api: "BooruApi") -> None:  # type: ignore[type-arg]
         """
         Sets the API instance.
 

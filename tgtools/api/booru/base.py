@@ -73,7 +73,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         """
         async with self.session.request(**request, auth=self.auth) as response:
             data = await response.json()
-        return data
+            return data  # type: ignore[no-any-return]
 
     def _convert_post(self, data: dict[str, JSONPrimitive]) -> T_Post:
         """
@@ -102,7 +102,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         """
         url = self._posts_url.url().query(limit=limit, tags=" ".join(tags)).build()
         if (posts := await self._request(url)) and isinstance(posts, list):
-            return list(map(self._convert_post, posts))  # type: ignore
+            return list(map(self._convert_post, posts))
         return []
 
     async def post(self, id: int) -> T_Post | None:

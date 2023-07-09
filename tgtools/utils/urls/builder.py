@@ -16,7 +16,7 @@ class RequestDict(TypedDict):
     """
 
     url: str
-    params: dict
+    params: dict[str, Any]
     data: Optional[Any]
     method: str
 
@@ -32,7 +32,7 @@ class URLTemplateBuilder:
     def __init__(self, template: str):
         self.template = template
 
-    def url(self, **kwargs) -> "URLBuilder":
+    def url(self, **kwargs: Any) -> "URLBuilder":
         """
         Initiates the URL builder and fills the template with the given keyword arguments.
 
@@ -63,7 +63,7 @@ class URLBuilder:
         self._data = None
         self._method = "GET"
 
-    def query(self, **kwargs) -> "URLBuilder":
+    def query(self, **kwargs: Any) -> "URLBuilder":
         """
         Sets the query parameters for the URL.
 

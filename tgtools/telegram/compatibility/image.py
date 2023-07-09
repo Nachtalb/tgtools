@@ -3,7 +3,7 @@ from io import BytesIO
 from PIL import Image
 from telegram import Document, PhotoSize
 
-from tgtools.models.file_summary import URLFileSummary
+from tgtools.models.file_summary import FileSummary, URLFileSummary
 from tgtools.telegram.compatibility.base import MediaCompatibility, MediaSummary, MediaType
 
 
@@ -79,7 +79,7 @@ class ImageCompatibility(MediaCompatibility):
         """
         return self.resolution_too_heigh() or self.ratio_too_drastic() or self.file_size_too_big() or self.is_webp()
 
-    def decrease_file_size(self, image: Image.Image, max_size: tuple[int, int] = (0, 0)):
+    def decrease_file_size(self, image: Image.Image, max_size: tuple[int, int] = (0, 0)) -> None:
         """
         Continuously reduce the image resolution until the file size is small enough to upload.
 
@@ -90,7 +90,7 @@ class ImageCompatibility(MediaCompatibility):
         while self.file_size_too_big(max_size):
             image = self.reduce_resolution(image)
 
-    def save_file(self, image: Image.Image, format: str | None = None):
+    def save_file(self, image: Image.Image, format: str | None = None) -> None:
         """
         Save the image to self.file and update all information accordingly.
 
@@ -98,6 +98,8 @@ class ImageCompatibility(MediaCompatibility):
             image (Image.Image): The image to save.
             format (str | None, optional): The format to save the image as. Defaults to None.
         """
+        if not isinstance(self.file, FileSummary):
+            raise ValueError("`self.file` has to be a `FileSummary`")
         file = BytesIO()
         format = format or self.file.file_ext
         if format.lower() == "jpg":
@@ -110,7 +112,7 @@ class ImageCompatibility(MediaCompatibility):
         self.file.file = file
         file.seek(0)
 
-    def _recalculate_size(self, image: Image.Image | BytesIO):
+    def _recalculate_size(self, image: Image.Image | BytesIO) -> None:
         """
         Recalculate width and height of the image
         """
@@ -191,12 +193,14 @@ class ImageCompatibility(MediaCompatibility):
         elif not self.needs_processing():
             return self.file, PhotoSize
 
-        with Image.open(self.file.file) as image:
-            if self.is_webp():
-                image = self.convert_to_jpeg(image)
+        if isinstance(self.file, FileSummary):
+            with Image.open(self.file.file) as image:
+                if self.is_webp():
+                    image = self.convert_to_jpeg(image)
 
-            self.decrease_file_size(image)
+                self.decrease_file_size(image)
 
-            if self.resolution_too_heigh():
-                self.reduce_resolution(image)
-            return self.file, PhotoSize
+                if self.resolution_too_heigh():
+                    self.reduce_resolution(image)
+
+        return self.file, PhotoSize

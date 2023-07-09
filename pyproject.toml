@@ -9,28 +9,43 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 pydantic = "^1.10.7"
-aiohttp = {extras = ["speedups"], version = "^3.8.4"}
+aiohttp = { extras = ["speedups"], version = "^3.8.4" }
 aiopath = "^0.6.11"
 pillow = "^9.5.0"
 emoji = "^2.2.0"
 python-telegram-bot = "^20.2"
-imageio = {extras = ["ffmpeg"], version = "^2.27.0"}
-
+imageio = { extras = ["ffmpeg"], version = "^2.27.0" }
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"
-ipython = {extras = ["black"], version = "^8.12.0"}
+ipython = { extras = ["black"], version = "^8.12.0" }
+pre-commit = "^3.3.3"
+ruff = "^0.0.277"
+mypy = "^1.4.1"
+isort = "^5.12.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.isort]
+profile = "black"
+line_length = 120
+
 [tool.black]
 line-length = 120
 preview = true
+target-version = ["py310", "py311"]
 
 [tool.ruff]
 line-length = 120
 
 [tool.mypy]
-ignore_missing_imports = true
+python_version = "3.10"
+show_error_codes = true
+pretty = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = "aiopath.*"
+ignore_missing_imports = "True"

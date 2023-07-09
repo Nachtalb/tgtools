@@ -165,8 +165,8 @@ class CommonPostInfo(BooruPost):
                 size=self.file_size,
                 height=self.height,
                 width=self.width,
-                download_method=self.download,  # pyright: ignore[reportGeneralTypeIssues]
-                iter_download_method=self.iter_download,  # pyright: ignore[reportGeneralTypeIssues]
+                download_method=self.download,  # type: ignore[arg-type]
+                iter_download_method=self.iter_download,  # type: ignore[arg-type]
             )
 
         return self._file_summary

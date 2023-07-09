@@ -1,5 +1,5 @@
-from typing import Generic, Type
 from types import new_class
+from typing import Generic, Type
 
 from aiohttp import BasicAuth, ClientSession
 
@@ -47,7 +47,7 @@ class V1Api(Generic[T_Post], BooruApi[T_Post]):
         """
         url = self._post_url.url(id=id).build()
         if (post := await self._request(url)) and isinstance(post, list):
-            return self._convert_post(post[0])  # type: ignore
+            return self._convert_post(post[0])  # pyright: ignore[reportGeneralTypeIssues]
         return None
 
 
@@ -68,7 +68,7 @@ def create_v1_api_subclass(
     default_host: str,
 ) -> Type[GenericV1Api[T_Post]]:
     def custom_init(
-        self,
+        self: V1Api[T_Post],
         session: ClientSession,
         auth: BasicAuth | None = None,
         host: str = default_host,

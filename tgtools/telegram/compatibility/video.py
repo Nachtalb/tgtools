@@ -1,5 +1,6 @@
 from asyncio import subprocess
 from io import BytesIO
+from typing import Optional
 
 import imageio
 import numpy as np
@@ -27,7 +28,7 @@ class VideoCompatibility(DocumentCompatibility):
         Returns:
             BytesIO: The first image extracted from the video content.
         """
-        video_reader = imageio.get_reader(content, "ffmpeg")  # pyright: ignore[reportGeneralTypeIssues]
+        video_reader = imageio.get_reader(content, "ffmpeg")  # type: ignore[arg-type]
         first_frame = video_reader.get_data(0)
 
         image = Image.fromarray(np.uint8(first_frame))
@@ -37,7 +38,7 @@ class VideoCompatibility(DocumentCompatibility):
         buffer.seek(0)
         return buffer
 
-    async def _get_first_frame(self):
+    async def _get_first_frame(self) -> Optional[BytesIO]:
         """
         Returns the first frame from self.file
 
@@ -57,6 +58,8 @@ class VideoCompatibility(DocumentCompatibility):
                         return self._extract_first_image(buffer)
                     except IndexError:
                         buffer.seek(0, 2)
+                else:
+                    raise ValueError("Could not retrieve first frame from URL")
             else:
                 raise NotImplementedError("To download the first frame implement iter_download_method")
         else:
@@ -79,7 +82,7 @@ class VideoCompatibility(DocumentCompatibility):
                     height=self.file.height,
                 )
                 return result
-        except NotImplementedError:
+        except (NotImplementedError, ValueError):
             pass
         return None
 
@@ -144,7 +147,7 @@ class VideoCompatibility(DocumentCompatibility):
             # `mp4_data` will be a BytesIO object containing the converted MP4 video or None if the conversion failed
         """
         video_filter = "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2"  # Make sure we have even width and height
-        codec = "-c:v", "libx264"  # Use H264 codec (faster to encode comapred to H265)
+        codec = "-c:v", "libx264"  # Use H264 codec (faster to encode compared to H265)
         # output_format = "-f", "ismv"  # May not be supported (Internet Streaming Media Format)
         output_format = "-f", "mp4"  # Use a mp4 container
         output_options = "-movflags", "+faststart", "-pix_fmt", "yuv420p"  # Streamability and ensure supported colors
