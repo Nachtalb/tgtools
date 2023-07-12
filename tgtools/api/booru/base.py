@@ -102,7 +102,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         """
         url = self._posts_url.url().query(limit=limit, tags=" ".join(tags)).build()
         if (posts := await self._request(url)) and isinstance(posts, list):
-            return list(map(self._convert_post, posts))
+            return list(map(self._convert_post, posts))  # pyright: ignore
         return []
 
     async def post(self, id: int) -> T_Post | None:

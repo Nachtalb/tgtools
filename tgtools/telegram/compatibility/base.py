@@ -1,13 +1,11 @@
 from abc import ABCMeta, abstractmethod
-from io import BytesIO
-from typing import Type
+from typing import Optional, Union
 
-from telegram import Document, PhotoSize, Video
+from tgtools.models.summaries import Downloadable, FileSummary, ToDownload
+from tgtools.utils.types import TELEGRAM_FILES
 
-from tgtools.models.file_summary import FileSummary, URLFileSummary
-
-MediaSummary = FileSummary | URLFileSummary
-MediaType = Type[PhotoSize] | Type[Video] | Type[Document] | None
+InputFileType = Union[FileSummary, ToDownload, Downloadable]
+OutputFileType = Union[FileSummary, Downloadable]
 
 
 class MediaCompatibility(metaclass=ABCMeta):
@@ -22,44 +20,34 @@ class MediaCompatibility(metaclass=ABCMeta):
     MAX_SIZE_URL = 20_000_000
     MAX_SIZE_UPLOAD = 50_000_000
 
-    def __init__(self, file: MediaSummary) -> None:
+    def __init__(self, file: InputFileType) -> None:
         """
         Initialize the MediaCompatibility object.
 
         Args:
-            file (MediaSummary): The media file to be checked for compatibility.
+            file (FileSummary): The media file to be checked for compatibility.
         """
         self.file = file
 
-    def url_to_file_summary(self, content: BytesIO) -> FileSummary:
+    async def download_if_needed(self, force_download: bool = False) -> OutputFileType:
         """
-        Convert a URLFileSummary object into a FileSummary object.
+        Check wether the file has to be downloaded and download it
 
         Args:
-            content (BytesIO): The content of the file as a BytesIO object.
+            force_download (bool, optional): Force download the file (defaults to False)
 
         Returns:
-            FileSummary: The converted FileSummary object.
+            A FileSummary or a Downloadable depending on wether the file had to be downloaded or not
         """
-        if isinstance(self.file, FileSummary):
-            return self.file
-        data = self.file.dict(exclude={"url", "download_method", "iter_download_method"})
-        data["file"] = content
-        return FileSummary.parse_obj(data)
-
-    async def download(self) -> FileSummary:
-        """
-        Download the media file and return it as a FileSummary object.
-
-        Returns:
-            FileSummary: The downloaded media file as a FileSummary object.
-        """
-        if isinstance(self.file, URLFileSummary):
-            return self.url_to_file_summary(await self.file.download_method())
+        force_download = force_download or (
+            hasattr(self.file.size, "size") and self.file.size > self.MAX_SIZE_URL < self.MAX_SIZE_UPLOAD
+        )
+        if (isinstance(self.file, Downloadable) and force_download) or isinstance(self.file, ToDownload):
+            return await self.file.download_to_summary()
         return self.file
 
     @abstractmethod
-    async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:
+    async def make_compatible(self, force_download: bool = False) -> tuple[Optional[OutputFileType], TELEGRAM_FILES]:
         """
         Make the media file compatible with Telegram by checking its size and converting it if necessary.
 
@@ -67,7 +55,7 @@ class MediaCompatibility(metaclass=ABCMeta):
             force_download (bool, optional): Force download the file even if it's already compatible. Defaults to False.
 
         Returns:
-            tuple[MediaSummary | None, bool]: A tuple containing the converted media file (or None if not converted) and
+            tuple[Optional[FileType], bool]: A tuple containing the converted media file (or None if not converted) and
                                               a boolean indicating if it has to be sent as a Telegram Document.
         """
         ...

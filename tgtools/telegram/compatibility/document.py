@@ -1,7 +1,10 @@
+from typing import Optional
+
 from telegram import Document
 
-from tgtools.models.file_summary import URLFileSummary
-from tgtools.telegram.compatibility.base import MediaCompatibility, MediaSummary, MediaType
+from tgtools.models.summaries import Downloadable, FileSummary
+from tgtools.telegram.compatibility.base import MediaCompatibility, OutputFileType
+from tgtools.utils.types import TELEGRAM_FILES
 
 
 class DocumentCompatibility(MediaCompatibility):
@@ -10,7 +13,9 @@ class DocumentCompatibility(MediaCompatibility):
     Inherits from MediaCompatibility.
     """
 
-    async def make_compatible(self, force_download: bool = False) -> tuple[MediaSummary | None, MediaType]:
+    async def make_compatible(
+        self, force_download: bool = False
+    ) -> tuple[Optional[OutputFileType] | None, TELEGRAM_FILES]:
         """
         Make the document file compatible with Telegram by checking its size and downloading if necessary.
 
@@ -21,8 +26,9 @@ class DocumentCompatibility(MediaCompatibility):
             tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
                                                    compatible) and its type.
         """
-        if self.file.size > self.MAX_SIZE_UPLOAD:
-            return None, None
-        if isinstance(self.file, URLFileSummary) and (self.file.size > self.MAX_SIZE_URL or force_download):
-            self.file = await self.download()
+        if isinstance(self.file, (Downloadable, FileSummary)) and self.file.size > self.MAX_SIZE_UPLOAD:
+            return None, Document
+
+        self.file = await self.download_if_needed(force_download=force_download)
+
         return self.file, Document

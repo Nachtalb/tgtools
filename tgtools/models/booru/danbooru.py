@@ -1,33 +1,14 @@
 from datetime import datetime
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pydantic import PrivateAttr
+from yarl import URL
 
 from tgtools.models.booru.common import CommonPostInfo
-from tgtools.models.file_summary import URLFileSummary
+from tgtools.models.summaries import DownloadableMedia
 
 if TYPE_CHECKING:
     from tgtools.api.booru.danbooru import DanbooruApi
-
-
-class DanbooruFileSummary(URLFileSummary):
-    """
-    A class representing a summary of a Danbooru file.
-
-    Attributes:
-        is_gif (bool): Indicates if the file is a gif.
-    """
-
-    @property
-    def is_gif(self) -> bool:
-        """
-        Checks if the file is a gif.
-
-        Returns:
-            bool: True if the file is a gif, False otherwise.
-        """
-        return self.file_ext == "zip"
 
 
 class DanbooruPost(CommonPostInfo):
@@ -117,7 +98,7 @@ class DanbooruPost(CommonPostInfo):
     bit_flags: int
 
     _api: "DanbooruApi" = PrivateAttr()
-    _file_summary: DanbooruFileSummary | None = PrivateAttr(None)
+    _file_summary: DownloadableMedia | None = PrivateAttr(None)
     _post_url_path = PrivateAttr("/posts/{{id}}")
 
     @property
@@ -178,7 +159,7 @@ class DanbooruPost(CommonPostInfo):
         Returns:
             str: The best file URL as a string.
         """
-        return self.file_url if not self.file_summary.is_gif else (self.large_file_url or self.file_url)
+        return self.file_url if self.file_summary.file_ext != "zip" else (self.large_file_url or self.file_url)
 
     @property
     def is_bad(self) -> bool:
@@ -194,7 +175,7 @@ class DanbooruPost(CommonPostInfo):
         return self.is_banned or (self.is_deleted and ((self.up_score or 1) / abs(self.down_score or 1) < 2))
 
     @property
-    def file_summary(self) -> DanbooruFileSummary:
+    def file_summary(self) -> DownloadableMedia:
         """
         Get the file summary of the post.
 
@@ -202,16 +183,15 @@ class DanbooruPost(CommonPostInfo):
             DanbooruFileSummary: The file summary as a DanbooruFileSummary object.
         """
         if not self._file_summary:
-            self._file_summary = DanbooruFileSummary(
+            self._file_summary = DownloadableMedia(
                 url=self.file_url,
-                file_name=Path(self.filename),
+                filename=self.filename,
                 size=self.file_size,
                 height=self.height,
                 width=self.width,
-                download_method=self.download,  # type: ignore[arg-type]
-                iter_download_method=self.iter_download,  # type: ignore[arg-type]
+                download_method=self.download,
             )
-            self._file_summary.url = self.best_file_url
+            self._file_summary.url = URL(self.best_file_url)
         return self._file_summary
 
     @property

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, AsyncGenerator
 from pydantic import BaseModel, PrivateAttr
 from yarl import URL
 
-from tgtools.models.file_summary import URLFileSummary
+from tgtools.models.summaries.downloadable import DownloadableMedia
 from tgtools.utils.urls.builder import URLTemplateBuilder
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ class BooruPost(BaseModel, metaclass=ABCMeta):
 
     # TODO: No idea how the correct type annotation here would be
     _api: "BooruApi" = PrivateAttr()  # type: ignore[type-arg]
-    _file_summary: URLFileSummary | None = PrivateAttr(None)
+    _file_summary: DownloadableMedia | None = PrivateAttr(None)
     _post_url: URLTemplateBuilder = PrivateAttr(URLTemplateBuilder("https://example.com/posts/{id}"))
     _post_url_path: str = PrivateAttr("")
 
@@ -241,7 +241,7 @@ class BooruPost(BaseModel, metaclass=ABCMeta):
         ...
 
     @abstractproperty
-    def file_summary(self) -> URLFileSummary:
+    def file_summary(self) -> DownloadableMedia:
         """
         Get the file summary of the post.
 

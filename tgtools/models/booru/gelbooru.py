@@ -3,10 +3,11 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from pydantic import PrivateAttr, root_validator
+from telegram import PhotoSize
 
 from tgtools.constants import GelbooruStyleVersion
 from tgtools.models.booru.common import CommonPostInfo
-from tgtools.models.file_summary import URLFileSummary
+from tgtools.models.summaries.downloadable import DownloadableMedia
 
 if TYPE_CHECKING:
     from tgtools.api.booru.gelbooru import GelbooruApi
@@ -44,7 +45,7 @@ class GelbooruPost(CommonPostInfo):
     _api: "GelbooruApi" = PrivateAttr()
 
     _post_url_path = PrivateAttr(GelbooruStyleVersion.post_gui_path)
-    _file_summary: URLFileSummary | None = PrivateAttr(None)
+    _file_summary: DownloadableMedia | None = PrivateAttr(None)
 
     @root_validator(pre=True)
     def handle_values(cls, values: dict[str, Any]) -> dict[str, Any]:
@@ -56,7 +57,7 @@ class GelbooruPost(CommonPostInfo):
         return values
 
     @property
-    def file_summary(self) -> URLFileSummary:
+    def file_summary(self) -> DownloadableMedia:
         """
         Get the file summary of the post.
 
@@ -65,14 +66,13 @@ class GelbooruPost(CommonPostInfo):
         """
         if not self._file_summary:
             self._file_summary = super().file_summary
-            if not self._file_summary.is_image and self.sample_url:
-                self._file_summary = URLFileSummary(
+            if self._file_summary.telegram_type is not PhotoSize and self.sample_url:
+                self._file_summary = DownloadableMedia(
                     url=self.sample_url,
-                    file_name=Path(self.filename),
+                    filename=self.filename,
                     size=self.sample_file_size,
                     height=self.sample_height,
                     width=self.sample_width,
-                    download_method=self.download,  # type: ignore[arg-type]
-                    iter_download_method=self.iter_download,  # type: ignore[arg-type]
+                    download_method=self.download,
                 )
         return self._file_summary

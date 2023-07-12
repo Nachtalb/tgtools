@@ -1,12 +1,11 @@
 from datetime import datetime
-from pathlib import Path
 from typing import Any
 
 from pydantic import root_validator
 
 from tgtools.models.booru.base import BooruPost
 from tgtools.models.booru.rating import RATING
-from tgtools.models.file_summary import URLFileSummary
+from tgtools.models.summaries.downloadable import DownloadableMedia
 
 
 class CommonPostInfo(BooruPost):
@@ -151,7 +150,7 @@ class CommonPostInfo(BooruPost):
         return self.source
 
     @property
-    def file_summary(self) -> URLFileSummary:
+    def file_summary(self) -> DownloadableMedia:
         """
         Get the file summary of the post.
 
@@ -159,14 +158,13 @@ class CommonPostInfo(BooruPost):
             URLFileSummary: The file summary as a DanbooruFileSummary object.
         """
         if not self._file_summary:
-            self._file_summary = URLFileSummary(
+            self._file_summary = DownloadableMedia(
                 url=self.file_url,
-                file_name=Path(self.filename),
+                filename=self.filename,
                 size=self.file_size,
                 height=self.height,
                 width=self.width,
-                download_method=self.download,  # type: ignore[arg-type]
-                iter_download_method=self.iter_download,  # type: ignore[arg-type]
+                download_method=self.download,
             )
 
         return self._file_summary
