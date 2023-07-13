@@ -7,7 +7,7 @@ from telegram import Document, PhotoSize
 
 from tgtools.models.summaries import DownloadableMedia, MediaFileSummary, MediaMixin
 from tgtools.telegram.compatibility.base import MediaCompatibility, OutputFileType
-from tgtools.utils.file import get_bytes_from_file
+from tgtools.utils.file import read_file_like
 from tgtools.utils.types import TELEGRAM_FILES
 
 
@@ -88,7 +88,7 @@ class ImageCompatibility(MediaCompatibility):
         if not isinstance(self.file, MediaFileSummary):
             raise ValueError("`self.file` needs to be a downloaded piece of media `MediaFileSummary`")
 
-        with Image.open(await get_bytes_from_file(self.file.file)) as image:
+        with Image.open(BytesIO(await read_file_like(self.file.file))) as image:
             while self.file_size_too_big():
                 image = self.reduce_resolution(image=image, decrease_resolution=decrease_resolution)
                 await self.update_file(image=image)
@@ -126,7 +126,7 @@ class ImageCompatibility(MediaCompatibility):
         if not isinstance(self.file, MediaFileSummary):
             raise ValueError("`self.file` needs to be a downloaded piece of media `MediaFileSummary`")
 
-        with Image.open(await get_bytes_from_file(self.file.file)) as image:
+        with Image.open(BytesIO(await read_file_like(self.file.file))) as image:
             if image.mode == "RGBA":
                 white_background = Image.new("RGB", image.size, (255, 255, 255))
                 white_background.paste(image, (0, 0), image)

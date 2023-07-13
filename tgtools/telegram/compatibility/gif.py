@@ -7,7 +7,7 @@ from telegram import Animation
 from tgtools.models.summaries import Downloadable, MediaFileSummary
 from tgtools.telegram.compatibility.base import OutputFileType
 from tgtools.telegram.compatibility.video import VideoCompatibility
-from tgtools.utils.file import ffmpeg, get_bytes_from_file
+from tgtools.utils.file import ffmpeg, read_file_like
 from tgtools.utils.types import TELEGRAM_FILES
 
 
@@ -47,7 +47,7 @@ class GifCompatibility(VideoCompatibility):
         self.file = file
 
         if isinstance(self.file, MediaFileSummary):
-            if converted := await self.remove_audio(await get_bytes_from_file(self.file.file)):
+            if converted := await self.remove_audio(await read_file_like(self.file.file)):
                 self.file.file = converted
                 self.file.filename = Path(self.file.filename).with_suffix(".mp4").name
                 self.file.size = converted.getbuffer().nbytes

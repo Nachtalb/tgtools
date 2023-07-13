@@ -5,7 +5,7 @@ from typing import Any
 
 from aiopath import AsyncPath
 
-from tgtools.utils.types import AsyncFile, FileOrPath, FilePath
+from tgtools.utils.types import FileOrPath, FilePath
 
 
 async def seek(file: Any, offset: int) -> None:
@@ -75,14 +75,17 @@ async def ffprobe(input: bytes, *arguments: str) -> dict[str, Any]:
     return json.loads(stdout) if stdout else None  # type: ignore[no-any-return ]
 
 
-async def get_bytes_from_file(file: FileOrPath) -> bytes:
+async def read_file_like(file: FileOrPath) -> bytes:
     """
     Read and return bytes from file like or file path
     """
+    await seek(file=file, offset=0)
     if isinstance(file, FilePath):  # type: ignore[arg-type, misc]
         content = await AsyncPath(file).read_bytes()
-    elif isinstance(file, AsyncFile):
-        content = await file.read()
+    elif isinstance(file, BytesIO):
+        content = file.getvalue()
+    elif (read := getattr(file, "read", None)) and iscoroutinefunction(read):
+        content = await read()
     else:
         content = file.read()  # type: ignore[union-attr]
     await seek(file=file, offset=0)

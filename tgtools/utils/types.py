@@ -1,37 +1,10 @@
 from pathlib import Path
-from typing import IO, Protocol, Type, Union, runtime_checkable
+from typing import IO, Type, Union
 
 from aiopath import AsyncPath
 from telegram import Animation, Document, PhotoSize, Video
 
-
-@runtime_checkable
-class File(Protocol):
-    """
-    A file like object with synchronous write and read
-    """
-
-    def write(self, s: bytes) -> int:
-        ...
-
-    def read(self, n: int = -1) -> bytes:
-        ...
-
-
-@runtime_checkable
-class AsyncFile(Protocol):
-    """
-    A file like object with asynchronous write and read
-    """
-
-    async def write(self, s: bytes) -> int:
-        ...
-
-    async def read(self, n: int = -1) -> bytes:
-        ...
-
-
-FileLike = Union[IO[bytes], File, AsyncFile]
+FileLike = IO[bytes]
 """Either a bytes-stream (e.g. open file handler) or a similar object that supports read and write (sync or async)."""
 
 FilePath = Union[str, Path, AsyncPath]

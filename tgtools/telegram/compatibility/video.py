@@ -7,7 +7,7 @@ from telegram import Video
 from tgtools.models.summaries import Downloadable, MediaFileSummary
 from tgtools.telegram.compatibility.base import OutputFileType
 from tgtools.telegram.compatibility.document import DocumentCompatibility
-from tgtools.utils.file import ffmpeg, get_bytes_from_file
+from tgtools.utils.file import ffmpeg, read_file_like
 from tgtools.utils.types import TELEGRAM_FILES
 
 
@@ -79,7 +79,7 @@ class VideoCompatibility(DocumentCompatibility):
         self.file = file
 
         if isinstance(self.file, MediaFileSummary):
-            file_content = await get_bytes_from_file(file=self.file.file)
+            file_content = await read_file_like(file=self.file.file)
             if self.file.file_ext in ["mp4", "mkv"]:
                 conversion = await self.make_streamable(data=file_content)
             else:

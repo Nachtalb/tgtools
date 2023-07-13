@@ -7,8 +7,8 @@ from aiopath import AsyncPath
 from PIL import Image
 from telegram import Animation, Document, PhotoSize, Video
 
-from tgtools.utils.file import ffprobe, get_bytes_from_file, seek
-from tgtools.utils.types import GIF_TYPES, IMAGE_TYPES, TELEGRAM_FILES, VIDEO_TYPES, AsyncFile, FileOrPath, FilePath
+from tgtools.utils.file import ffprobe, read_file_like, seek
+from tgtools.utils.types import GIF_TYPES, IMAGE_TYPES, TELEGRAM_FILES, VIDEO_TYPES, FileOrPath, FilePath
 
 __all__ = ["FileSummary", "MediaFileSummary", "MediaMixin", "FileExtMixin"]
 
@@ -69,11 +69,8 @@ class FileSummary(FileExtMixin):
             return (await a_file.stat()).st_size  # type: ignore[no-any-return]
         elif isinstance(file, BytesIO):
             return file.getbuffer().nbytes
-        elif isinstance(file, AsyncFile):
-            size = len(await file.read())
-            await seek(file, 0)
         else:
-            size = len(file.read())  # type: ignore[union-attr]
+            size = len(await read_file_like(file))
             await seek(file, 0)
         return size
 
@@ -103,7 +100,7 @@ class FileSummary(FileExtMixin):
             return Path(str(self.file))
         elif isinstance(self.file, BytesIO):
             return self.file
-        return await get_bytes_from_file(self.file)
+        return await read_file_like(self.file)
 
 
 class MediaMixin:
@@ -193,7 +190,7 @@ class MediaFileSummary(MediaMixin, FileSummary):
         Returns:
             The tuple resolution of the file as width and height in that order
         """
-        file_content = await get_bytes_from_file(file=file)
+        file_content = await read_file_like(file=file)
 
         if ext in [*VIDEO_TYPES, *GIF_TYPES]:
             return await cls._determine_size_video(input=file_content)
@@ -230,5 +227,5 @@ class MediaFileSummary(MediaMixin, FileSummary):
         Returns:
             A tuple of width and height in that order
         """
-        with Image.open(input) as image:
+        with Image.open(BytesIO(input)) as image:
             return image.size
