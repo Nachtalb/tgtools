@@ -60,6 +60,12 @@ class Downloadable(FileExtMixin):
             return summary
         return await MediaFileSummary.from_file_summary(summary=summary)
 
+    async def as_common(self) -> str:
+        """
+        Return the content of the file in a commonly used format
+        """
+        return str(self.url)
+
 
 class DownloadableMedia(Downloadable, MediaMixin):
     """

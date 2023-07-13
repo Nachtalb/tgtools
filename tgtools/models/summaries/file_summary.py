@@ -95,6 +95,16 @@ class FileSummary(FileExtMixin):
             size=await cls._determine_size(file),
         )
 
+    async def as_common(self) -> BytesIO | Path | bytes:
+        """
+        Return the content of the file in a commonly used format
+        """
+        if isinstance(self.file, (AsyncPath, Path, str)):
+            return Path(str(self.file))
+        elif isinstance(self.file, BytesIO):
+            return self.file
+        return await get_bytes_from_file(self.file)
+
 
 class MediaMixin:
     height: int
