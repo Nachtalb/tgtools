@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import root_validator
+from pydantic import model_validator
 
 from tgtools.models.booru.base import BooruPost
 from tgtools.models.booru.rating import RATING
@@ -53,7 +53,8 @@ class CommonPostInfo(BooruPost):
     file_url: str
     file_ext: str
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def handle_aliases(cls, values: dict[str, Any]) -> Any:
         if "image_width" in values:
             values["width"] = values.pop("image_width")

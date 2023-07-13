@@ -2,7 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from pydantic import PrivateAttr, root_validator
+from pydantic import PrivateAttr, model_validator
 from telegram import PhotoSize
 
 from tgtools.constants import GelbooruStyleVersion
@@ -47,7 +47,8 @@ class GelbooruPost(CommonPostInfo):
     _post_url_path = PrivateAttr(GelbooruStyleVersion.post_gui_path)
     _file_summary: DownloadableMedia | None = PrivateAttr(None)
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def handle_values(cls, values: dict[str, Any]) -> dict[str, Any]:
         if "file_ext" not in values:
             values["file_ext"] = Path(values["file_url"]).suffix.lstrip(".")
