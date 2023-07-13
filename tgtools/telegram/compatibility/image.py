@@ -170,7 +170,7 @@ class ImageCompatibility(MediaCompatibility):
             tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
                                                    compatible) and its type.
         """
-        file = self.download_if_needed(
+        file = await self.download_if_needed(
             force_download=force_download or not isinstance(self.file, MediaMixin) or self.needs_processing()
         )
         if not file or not isinstance(file, (DownloadableMedia, MediaFileSummary)):
