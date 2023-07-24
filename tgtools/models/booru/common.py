@@ -38,7 +38,7 @@ class CommonPostInfo(BooruPost):
     rating: str
     source: str | None
     score: int
-    parent_id: int
+    parent_id: int | None
     has_children: bool
     is_pending: bool
 
