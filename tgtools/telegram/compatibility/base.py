@@ -40,7 +40,7 @@ class MediaCompatibility(metaclass=ABCMeta):
             A FileSummary or a Downloadable depending on wether the file had to be downloaded or not
         """
         force_download = force_download or (
-            hasattr(self.file.size, "size") and self.file.size > self.MAX_SIZE_URL < self.MAX_SIZE_UPLOAD
+            hasattr(self.file, "size") and self.file.size > self.MAX_SIZE_URL < self.MAX_SIZE_UPLOAD
         )
         if (isinstance(self.file, Downloadable) and force_download) or isinstance(self.file, ToDownload):
             return await self.file.download_to_summary()

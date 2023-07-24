@@ -2,7 +2,7 @@ from typing import Optional
 
 from telegram import Document
 
-from tgtools.models.summaries import Downloadable, FileSummary
+from tgtools.models.summaries import ToDownload
 from tgtools.telegram.compatibility.base import MediaCompatibility, OutputFileType
 from tgtools.utils.types import TELEGRAM_FILES
 
@@ -26,7 +26,7 @@ class DocumentCompatibility(MediaCompatibility):
             tuple[MediaSummary | None, MediaType]: A tuple containing the compatible media file (or None if not
                                                    compatible) and its type.
         """
-        if isinstance(self.file, (Downloadable, FileSummary)) and self.file.size > self.MAX_SIZE_UPLOAD:
+        if not isinstance(self.file, ToDownload) and self.file.size > self.MAX_SIZE_UPLOAD:
             return None, Document
 
         self.file = await self.download_if_needed(force_download=force_download)
