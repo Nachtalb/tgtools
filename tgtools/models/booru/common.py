@@ -50,8 +50,8 @@ class CommonPostInfo(BooruPost):
     md5: str | None
 
     file_size: int
-    file_url: str
-    file_ext: str
+    file_url: str | None
+    file_ext: str | None
 
     @model_validator(mode="before")
     @classmethod

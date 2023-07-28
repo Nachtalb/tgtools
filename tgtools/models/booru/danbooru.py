@@ -63,11 +63,13 @@ class DanbooruPost(CommonPostInfo):
 
     uploader_id: int
     approver_id: int | None
+    md5: str | None = None
 
     pixiv_id: int | None
 
-    large_file_url: str | None
-    preview_file_url: str | None
+    file_url: str | None = None
+    large_file_url: str | None = None
+    preview_file_url: str | None = None
 
     up_score: int
     down_score: int
@@ -159,6 +161,8 @@ class DanbooruPost(CommonPostInfo):
         Returns:
             str: The best file URL as a string.
         """
+        if not self.file_url or not self.large_file_url:
+            raise ValueError("Post is banned thus has no files")
         return self.file_url if self.file_summary.file_ext != "zip" else (self.large_file_url or self.file_url)
 
     @property
@@ -182,6 +186,9 @@ class DanbooruPost(CommonPostInfo):
         Returns:
             DanbooruFileSummary: The file summary as a DanbooruFileSummary object.
         """
+        if self.is_banned or not self.file_url or self.file_ext or self.large_file_url:
+            raise ValueError("Post is banned thus has no files")
+
         if not self._file_summary:
             self._file_summary = DownloadableMedia(
                 url=self.file_url,
