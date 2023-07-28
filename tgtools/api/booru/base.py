@@ -1,7 +1,7 @@
 from abc import ABCMeta
 from io import BytesIO
 from pathlib import Path
-from typing import AsyncGenerator, Generic, Type, TypeVar
+from typing import Any, AsyncGenerator, Generic, Type, TypeVar
 
 from aiohttp import BasicAuth, ClientError, ClientSession
 from aiopath import AsyncPath
@@ -89,7 +89,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         post.set_api(self)
         return post
 
-    async def posts(self, tags: list[str] = [], limit: int = 10) -> list[T_Post]:
+    async def posts(self, tags: list[str] = [], limit: int = 10, page: int = 0, **api_kwargs: Any) -> list[T_Post]:
         """
         Retrieve a list of posts from the API.
 
@@ -100,7 +100,7 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         Returns:
             list[T_Post]: A list of Post instances.
         """
-        url = self._posts_url.url().query(limit=limit, tags=" ".join(tags)).build()
+        url = self._posts_url.url().query(limit=limit, tags=" ".join(tags), page=page, **api_kwargs).build()
         if (posts := await self._request(url)) and isinstance(posts, list):
             return list(map(self._convert_post, posts))  # pyright: ignore
         return []
