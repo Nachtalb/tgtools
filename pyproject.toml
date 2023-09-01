@@ -14,7 +14,7 @@ aiopath = "^0.6.11"
 pillow = "^10"
 emoji = "^2.2.0"
 python-telegram-bot = "^20.2"
-imageio = { extras = ["ffmpeg"], version = "^2.27.0" }
+imageio = { extras = ["ffmpeg"], version = "^2.31.2" }
 
 [tool.poetry.group.dev.dependencies]
 ipdb = ">=0.13.13"
