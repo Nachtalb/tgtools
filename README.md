@@ -1,5 +1,7 @@
 # tgtools
 
+⚠ In the middle of development, I don't recommend you use it as of now.
+
 A set of telegram related utilities that I use in multiple projects. Includes
 but is not limited to:
 
