@@ -26,3 +26,9 @@ class YandereStyleVersion(MinorVersion):
     post_api_path = "/post.json?tags=id:{id}"
     posts_api_path = "/post.json"
     post_gui_path = "/post/show/{id}"
+
+
+class ThreeDBooruVersion(MinorVersion):
+    post_api_path = "/post/index.json?tags=id:{id}"
+    posts_api_path = "/post/index.json"
+    post_gui_path = "/post/show/{id}"

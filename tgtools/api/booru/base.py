@@ -13,6 +13,11 @@ from tgtools.utils.urls.builder import RequestDict, URLTemplateBuilder
 
 T_Post = TypeVar("T_Post", bound=BooruPost)
 
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+    " Edg/117.0.2045.31"
+)
+
 
 class BooruError(ClientError):
     """
@@ -71,7 +76,9 @@ class BooruApi(Generic[T_Post], metaclass=ABCMeta):
         Returns:
             JSON | None: The API response as a dictionary or list of dictionaries, or None if no data is returned.
         """
-        async with self.session.request(**request, auth=self.auth) as response:
+        async with self.session.request(
+            **request, auth=self.auth, headers={"User-Agent": DEFAULT_USER_AGENT}
+        ) as response:
             data = await response.json()
             return data  # type: ignore[no-any-return]
 
