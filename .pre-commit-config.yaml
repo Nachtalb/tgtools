@@ -48,11 +48,9 @@ repos:
       - id: mypy
         args: ["--config-file=pyproject.toml"]
         additional_dependencies:
-          - aiohttp
           - emoji
           - imageio
           - numpy
-          - pydantic
           - python-telegram-bot
           - types-Pillow
   - repo: https://github.com/pre-commit/mirrors-prettier

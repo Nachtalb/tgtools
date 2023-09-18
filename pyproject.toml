@@ -8,13 +8,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pydantic = "^2"
-aiohttp = { extras = ["speedups"], version = "^3.8.4" }
-aiopath = "^0.6.11"
 pillow = "^10"
 emoji = "^2.2.0"
 python-telegram-bot = "^20.2"
 imageio = { extras = ["ffmpeg"], version = "^2.27.0" }
+aiopath = "^0.6.11"
+yarl = "^1.9.2"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = ">=0.13.13"
@@ -38,17 +37,13 @@ line_length = 120
 [tool.black]
 line-length = 120
 preview = true
-target-version = ["py310", "py311"]
+target-version = ["py311"]
 
 [tool.ruff]
 line-length = 120
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 show_error_codes = true
 pretty = true
 strict = true
-
-[[tool.mypy.overrides]]
-module = "aiopath.*"
-ignore_missing_imports = "True"
