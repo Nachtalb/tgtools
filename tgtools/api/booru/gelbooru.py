@@ -31,7 +31,7 @@ class GelbooruApi(V1Api[GelbooruPost]):
             return self._convert_post(posts[0])  # type: ignore
         return None
 
-    async def posts(self, tags: list[str] = [], limit: int = 10) -> list[GelbooruPost]:
+    async def posts(self, tags: list[str] = [], limit: int = 10) -> list[GelbooruPost]:  # type: ignore
         """
         Retrieve a list of posts from the API.
 

@@ -128,7 +128,7 @@ class CommonPostInfo(BooruPost):
         Returns:
             str: The best file URL as a string.
         """
-        return self.file_url
+        return self.file_url  # type: ignore[return-value]
 
     @property
     def filename(self) -> str:
@@ -160,7 +160,7 @@ class CommonPostInfo(BooruPost):
         """
         if not self._file_summary:
             self._file_summary = DownloadableMedia(
-                url=self.file_url,
+                url=self.file_url,  # type: ignore[arg-type]
                 filename=self.filename,
                 size=self.file_size,
                 height=self.height,

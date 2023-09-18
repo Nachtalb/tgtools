@@ -58,7 +58,7 @@ class GenericV1Api(Generic[T_Post], V1Api[T_Post]):
         auth: BasicAuth | None = None,
         host: str = "",
     ) -> None:
-        ...
+        pass
 
 
 def create_v1_api_subclass(
