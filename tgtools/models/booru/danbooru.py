@@ -186,7 +186,7 @@ class DanbooruPost(CommonPostInfo):
         Returns:
             DanbooruFileSummary: The file summary as a DanbooruFileSummary object.
         """
-        if self.is_banned or not self.file_url or self.file_ext or self.large_file_url:
+        if self.is_banned or not self.file_url or not self.file_ext or not self.large_file_url:
             raise ValueError("Post is banned thus has no files")
 
         if not self._file_summary:
