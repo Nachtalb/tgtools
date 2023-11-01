@@ -881,19 +881,19 @@ files = [
 
 [[package]]
 name = "imageio"
-version = "2.31.3"
+version = "2.31.6"
 description = "Library for reading and writing a wide range of image, video, scientific, and volumetric data formats."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "imageio-2.31.3-py3-none-any.whl", hash = "sha256:ea777be55bfa4bd6aee126c7dfa3bf1759bf87be982876c50f1a976d1b65446d"},
-    {file = "imageio-2.31.3.tar.gz", hash = "sha256:74c6a832d81b7ad5a8a80976dea58ee033d3e2b99a54990cbd789b4cb0b31461"},
+    {file = "imageio-2.31.6-py3-none-any.whl", hash = "sha256:70410af62626a4d725b726ab59138e211e222b80ddf8201c7a6561d694c6238e"},
+    {file = "imageio-2.31.6.tar.gz", hash = "sha256:721f238896a9a99a77b73f06f42fc235d477d5d378cdf34dd0bee1e408b4742c"},
 ]
 
 [package.dependencies]
 imageio-ffmpeg = {version = "*", optional = true, markers = "extra == \"ffmpeg\""}
 numpy = "*"
-pillow = ">=8.3.2"
+pillow = ">=8.3.2,<10.1.0"
 psutil = {version = "*", optional = true, markers = "extra == \"ffmpeg\""}
 
 [package.extras]
@@ -2073,4 +2073,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6a6022c16e7bfbc4ee3c647e903b8c99833de72e0c79a330ae43033161efc45f"
+content-hash = "75a7c4d89ccf5eb01e4dd2c1315497aaa18690ec2d5271103668df77a736153c"
