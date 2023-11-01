@@ -1022,13 +1022,13 @@ testing = ["Django (<3.1)", "attrs", "colorama", "docopt", "pytest (<7.0.0)"]
 
 [[package]]
 name = "lsprotocol"
-version = "2023.0.0a3"
+version = "2023.0.0b1"
 description = "Python implementation of the Language Server Protocol."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "lsprotocol-2023.0.0a3-py3-none-any.whl", hash = "sha256:2896c5a30c34846e3d5687e35715961f49bf7b92a36e4fb2b707ff65f19087f7"},
-    {file = "lsprotocol-2023.0.0a3.tar.gz", hash = "sha256:d704e4e00419f74bece9795de4b34d02aa555fc0131fec49f59ac9eb46816e51"},
+    {file = "lsprotocol-2023.0.0b1-py3-none-any.whl", hash = "sha256:ade2cd0fa0ede7965698cb59cd05d3adbd19178fd73e83f72ef57a032fbb9d62"},
+    {file = "lsprotocol-2023.0.0b1.tar.gz", hash = "sha256:f7a2d4655cbd5639f373ddd1789807450c543341fa0a32b064ad30dbb9f510d4"},
 ]
 
 [package.dependencies]
@@ -1680,24 +1680,21 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
 name = "pygls"
-version = "1.0.2"
-description = "a pythonic generic language server (pronounced like \"pie glass\")."
+version = "1.1.2"
+description = "A pythonic generic language server (pronounced like 'pie glass')"
 optional = false
-python-versions = "<4,>=3.7"
+python-versions = ">=3.7.9,<4"
 files = [
-    {file = "pygls-1.0.2-py3-none-any.whl", hash = "sha256:6d278d29fa6559b0f7a448263c85cb64ec6e9369548b02f1a7944060848b21f9"},
-    {file = "pygls-1.0.2.tar.gz", hash = "sha256:888ed63d1f650b4fc64d603d73d37545386ec533c0caac921aed80f80ea946a4"},
+    {file = "pygls-1.1.2-py3-none-any.whl", hash = "sha256:783d29c93679bb6756772f2de9b9f53b1a6fdf3fba66aeca23e87aa8aab20ecf"},
+    {file = "pygls-1.1.2.tar.gz", hash = "sha256:93fe17c01fd03307774290e685e7fa25bc1411cd72f243ff33eef21927fd0ad5"},
 ]
 
 [package.dependencies]
-lsprotocol = "*"
-typeguard = ">=3,<4"
+lsprotocol = "2023.0.0b1"
+typeguard = ">=3.0.0,<5"
 
 [package.extras]
-dev = ["bandit (==1.7.4)", "flake8 (==4.0.1)", "mypy (==0.961)"]
-docs = ["sphinx (==5.0.1)", "sphinx-rtd-theme (==1.0.0)"]
-test = ["pytest (==7.1.2)", "pytest-asyncio (==0.18.3)"]
-ws = ["websockets (==10.*)"]
+ws = ["websockets (>=11.0.3,<12.0.0)"]
 
 [[package]]
 name = "pygments"
@@ -1825,18 +1822,19 @@ files = [
 
 [[package]]
 name = "ruff-lsp"
-version = "0.0.39"
+version = "0.0.42"
 description = "A Language Server Protocol implementation for Ruff."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "ruff_lsp-0.0.39-py3-none-any.whl", hash = "sha256:60f7dbe1c34e3ed9729d72bc42c0b6227d45a9808977f511fa29af8820984817"},
-    {file = "ruff_lsp-0.0.39.tar.gz", hash = "sha256:faab8b836040df6ded8b1e3eca11a11ab7b7108b14e2f5d5deff8cc131676881"},
+    {file = "ruff_lsp-0.0.42-py3-none-any.whl", hash = "sha256:8dd1c8c5e9fd7888fef19d6de4c9a431554180de772ea32dc4422a492da2065c"},
+    {file = "ruff_lsp-0.0.42.tar.gz", hash = "sha256:249581bec445ccdffb313f8e6ef8ce20d14b8bba36a882a9d041c8334af68462"},
 ]
 
 [package.dependencies]
 lsprotocol = ">=2023.0.0a1"
-pygls = ">=1.0.1"
+packaging = ">=23.1"
+pygls = ">=1.1.0"
 ruff = ">=0.0.274"
 typing-extensions = "*"
 
@@ -2073,4 +2071,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "6a6022c16e7bfbc4ee3c647e903b8c99833de72e0c79a330ae43033161efc45f"
+content-hash = "e8ebbfc62b813e050fec875f34e498663ef79928f6291825dda352b27a95faef"
